@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EduAccounts Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b1120;--bg2:#111827;--bg3:#1f2937;--bg4:#374151;--primary:#4f8ef7;--primary2:#2563eb;--primary3:rgba(79,142,247,.12);--success:#10b981;--success2:rgba(16,185,129,.12);--warning:#f59e0b;--warning2:rgba(245,158,11,.12);--danger:#ef4444;--danger2:rgba(239,68,68,.12);--info:#8b5cf6;--info2:rgba(139,92,246,.12);--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#1e2d3d;--border2:#2d3f53;--card:#111827;--card2:#172033}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:230px;min-width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .25s}
+.sidebar.mini{width:58px;min-width:58px}
+.logo-area{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;min-height:54px}
+.logo-icon{width:32px;height:32px;min-width:32px;background:linear-gradient(135deg,var(--primary),var(--info));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo-text h1{font-size:13px;font-weight:700;color:#fff}.logo-text p{font-size:10px;color:var(--text3)}
+.sidebar.mini .logo-text,.sidebar.mini .nav-txt,.sidebar.mini .nav-label,.sidebar.mini .nav-badge{display:none}
+.sidebar.mini .nav-item{justify-content:center;padding:10px}
+.nav{flex:1;overflow-y:auto;padding:6px}
+.nav-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:10px 10px 4px;white-space:nowrap}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:12.5px;transition:.15s;margin-bottom:1px;position:relative;white-space:nowrap}
+.nav-item:hover{background:var(--bg3);color:var(--text)}.nav-item.active{background:var(--primary3);color:var(--primary);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--primary);border-radius:0 3px 3px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center}
+.sb-footer{padding:10px;border-top:1px solid var(--border)}.sb-user{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:var(--bg3)}
+.sb-avatar{width:30px;height:30px;min-width:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--info));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:700;color:#fff;flex:1}
+.content{flex:1;overflow-y:auto;padding:18px;background:var(--bg)}
+.page{display:none}.page.active{display:block}
+.breadcrumb{font-size:11px;color:var(--text3);margin-bottom:14px}.breadcrumb b{color:var(--text2)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.card-head h3{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.stat::after{content:attr(data-icon);position:absolute;right:-4px;bottom:-6px;font-size:48px;opacity:.07}
+.stat-val{font-size:22px;font-weight:700;color:#fff;line-height:1}.stat-lbl{font-size:11px;color:var(--text2);margin-top:5px}.stat-chg{font-size:10px;margin-top:4px}
+.pos{color:var(--success)}.neg{color:var(--danger)}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:10.5px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{width:100%;padding:7px 11px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12.5px;outline:none;transition:.15s;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,142,247,.1)}
+input[readonly]{background:var(--bg);color:var(--text3);cursor:default}select option{background:var(--bg2)}.fgrow{grid-column:1/-1}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:active{transform:scale(.97)}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary2)}
+.btn-success{background:var(--success);color:#fff}.btn-danger{background:var(--danger);color:#fff}
+.btn-warning{background:var(--warning);color:#000}.btn-info{background:var(--info);color:#fff}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-sm{padding:4px 9px;font-size:11px}.btn-xs{padding:3px 7px;font-size:10px}.btn-icon{width:30px;height:30px;padding:0;border-radius:7px;justify-content:center}
+.tbl-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 11px;text-align:left;background:var(--bg3);color:var(--text2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+th:first-child{border-radius:8px 0 0 8px}th:last-child{border-radius:0 8px 8px 0}
+td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:hover td{background:var(--card2)}tr:last-child td{border-bottom:none}.tbl-actions{display:flex;gap:4px}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.tg{background:var(--success2);color:#34d399}.tr{background:var(--danger2);color:#f87171}.tb{background:var(--primary3);color:#60a5fa}
+.ty{background:var(--warning2);color:#fbbf24}.tp{background:var(--info2);color:#a78bfa}.tgr{background:rgba(148,163,184,.1);color:#94a3b8}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.modal-sm{max-width:380px}.modal-md{max-width:520px}.modal-lg{max-width:700px}.modal-xl{max-width:860px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:14px;font-weight:700;color:#fff}
+.modal-body{padding:18px}.modal-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--bg)}
+.tog{position:relative;width:38px;height:20px;flex-shrink:0}.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;border-radius:10px;background:var(--bg4);cursor:pointer;transition:.2s}
+.tog-sl:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}
+.tog input:checked+.tog-sl{background:var(--primary)}.tog input:checked+.tog-sl:before{transform:translateX(18px)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.tog-row:last-child{border-bottom:none}.tog-info .t1{font-size:12.5px;font-weight:500;color:#fff}.tog-info .t2{font-size:11px;color:var(--text2);margin-top:1px}
+.tab-bar{display:flex;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:16px;overflow-x:auto;gap:2px}
+.tab-bar::-webkit-scrollbar{height:0}.tab{flex:1;text-align:center;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11.5px;font-weight:600;color:var(--text2);transition:.15s;white-space:nowrap}
+.tab.active{background:var(--bg2);color:#fff}.tab-content{display:none}.tab-content.active{display:block}
+.progress{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:5px}.progress-fill{height:100%;border-radius:3px}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.notice{border-radius:8px;padding:9px 13px;font-size:12px;margin-bottom:12px}
+.notice-warn{background:var(--warning2);border:1px solid rgba(245,158,11,.3);color:#fbbf24}
+.notice-info{background:var(--primary3);border:1px solid rgba(79,142,247,.25);color:#93c5fd}
+.notice-danger{background:var(--danger2);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.sep{border:none;border-top:1px solid var(--border);margin:14px 0}
+.sec-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 8px}
+.empty{text-align:center;padding:32px 16px;color:var(--text3);font-size:13px}
+.perm-check{display:flex;flex-wrap:wrap;gap:6px}
+.perm-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text);padding:4px 8px;background:var(--bg3);border-radius:6px}
+.perm-item input[type=checkbox]{width:auto}
+.currency-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:9px;cursor:pointer;border:1px solid var(--border);transition:.15s;margin-bottom:6px}
+.currency-opt:hover,.currency-opt.sel{border-color:var(--primary);background:var(--primary3)}
+.preview-box{background:var(--bg3);border-left:3px solid var(--primary);border-radius:8px;padding:11px 14px;margin-top:8px}
+#toast{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast-msg{background:var(--bg2);border:1px solid var(--border2);border-radius:9px;padding:10px 16px;font-size:12.5px;color:#fff;display:flex;align-items:center;gap:8px;animation:toastIn .25s ease;max-width:320px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-msg.fadeout{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+/* Loading overlay */
+.load-overlay{position:fixed;inset:0;background:rgba(11,17,32,.92);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.load-overlay h2{font-size:18px;font-weight:700;color:#fff}.load-overlay p{font-size:13px;color:var(--text2)}
+.spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Setup banner */
+.setup-banner{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.1));border:1px solid rgba(245,158,11,.4);border-radius:12px;padding:16px 20px;margin-bottom:16px}
+.setup-banner h3{font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:8px}
+.setup-banner p{font-size:12px;color:var(--text2);line-height:1.6}
+.setup-banner input{margin-top:8px;border-color:rgba(245,158,11,.4)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;margin-right:5px;animation:pulse 2s infinite}
+.sync-dot.offline{background:var(--danger);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.login-wrap{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:32px;width:420px;max-width:100%}
+.chart-container{display:flex;align-items:flex-end;gap:5px;height:100px;padding-top:8px}
+.bar-grp{flex:1;display:flex;gap:2px;align-items:flex-end}.bar{border-radius:3px 3px 0 0;transition:.5s;cursor:pointer}
+.bar-lbl{text-align:center;font-size:8px;color:var(--text3);margin-top:2px}
+/* Voucher */
+.vph{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px}
+.vph h2{font-size:17px;font-weight:800;color:#1e293b}.vph p{font-size:11px;color:#64748b;margin-top:2px}.vph h3{font-size:13px;font-weight:700;margin-top:5px;text-decoration:underline}
+.vpr{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px dotted #cbd5e1}
+.vpt{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;font-weight:800;border-top:2px solid #000;margin-top:8px}
+.vpw{font-size:11px;color:#475569;margin-top:4px;font-style:italic}
+.vpsig{display:flex;justify-content:space-between;margin-top:24px;font-size:11px}
+.vpsig-box{text-align:center;width:110px}.vpsig-line{border-top:1px solid #000;padding-top:3px}
+.vp-copy{text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;color:#64748b;margin-bottom:5px;text-transform:uppercase}
+.vp-sep{border:none;border-top:2px dashed #94a3b8;margin:16px 0}
+.voucher-wrap{background:#fff;padding:18px;border-radius:6px;color:#000;font-family:Arial,sans-serif;max-width:500px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div id="loadOverlay" class="load-overlay">
+  <div class="spinner"></div>
+  <h2>EduAccounts Pro</h2>
+  <p id="loadMsg">Connecting to Google Sheets...</p>
+</div>
+
+<!-- SETUP SCREEN (shown if no GAS URL configured) -->
+<div id="setupScreen" style="display:none" class="login-wrap">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--primary),var(--info));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px">⚙️</div>
+      <h1 style="font-size:18px;font-weight:800;color:#fff">Setup Required</h1>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Connect your Google Sheets backend</p>
+    </div>
+    <div class="notice notice-warn">
+      <b>⚠️ First-time setup:</b> You need to deploy the Google Apps Script backend and enter the URL below.
+    </div>
+    <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;font-size:12px;color:var(--text2);line-height:1.8">
+      <b style="color:#fff">Steps:</b><br>
+      1. Open <b style="color:var(--primary)">Google Sheets</b> → New spreadsheet<br>
+      2. Extensions → <b style="color:var(--primary)">Apps Script</b><br>
+      3. Paste the code from <b style="color:var(--primary)">gas_backend.js</b><br>
+      4. Deploy → New Deployment → <b style="color:var(--primary)">Web App</b><br>
+      5. Execute as: <b style="color:var(--primary)">Me</b> · Access: <b style="color:var(--primary)">Anyone</b><br>
+      6. Copy the <b style="color:var(--primary)">Web App URL</b> and paste below
+    </div>
+    <div class="fg"><label>Google Apps Script Web App URL</label>
+      <input id="gasUrlInput" placeholder="https://script.google.com/macros/s/XXXXX/exec" type="url">
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px" onclick="saveGASUrl()">🔗 Connect & Continue</button>
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text3)">The URL is saved in your browser's localStorage</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-wrap" style="display:none">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--primary),var(--info));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px">🏫</div>
+      <h1 style="font-size:20px;font-weight:800;color:#fff">EduAccounts Pro</h1>
+      <p style="font-size:12px;color:var(--text2);margin-top:3px">School Accounting Management System</p>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)"><span class="sync-dot" id="loginSyncDot"></span><span id="loginSyncText">Connected to Google Sheets</span></div>
+    </div>
+    <div class="fg"><label>Username</label><input id="li-user" value="admin" placeholder="Username"></div>
+    <div class="fg"><label>Password</label><input id="li-pass" type="password" value="admin123" placeholder="Password"></div>
+    <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px;margin-top:4px" onclick="doLogin()">🔐 Login Securely</button>
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text3)">Admin: admin/admin123 · Cashier: user1/user123</p>
+    <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="resetGASUrl()">⚙️ Change Google Sheets URL</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="app" style="display:none">
+  <div class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">🏫</div>
+      <div class="logo-text"><h1>EduAccounts</h1><p>Pro · Live 🟢</p></div>
+    </div>
+    <nav class="nav" id="navMenu"></nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div style="flex:1;overflow:hidden">
+          <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sbName">Admin</div>
+          <div style="font-size:10px;color:var(--text2)" id="sbRole">Administrator</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="padding:4px 7px" title="Logout">↩</button>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="topClock" style="font-size:11px;color:var(--text3)"></div>
+        <span id="syncStatus" class="tag tg" style="font-size:10px;cursor:pointer" onclick="syncAll()" title="Click to sync">🟢 Live</span>
+        <span id="topCurrBadge" class="tag tb" style="font-size:11px;cursor:pointer" onclick="nav('settings')">₹ INR</span>
+        <button class="btn btn-ghost btn-sm" onclick="nav('messages')" style="position:relative">
+          💬<span id="msgBadgeTop" class="nav-badge" style="position:absolute;top:-4px;right:-4px;display:none">0</span>
+        </button>
+        <div class="sb-avatar" id="topAvatar" style="width:30px;height:30px;font-size:12px;cursor:pointer" onclick="nav('settings')">A</div>
+      </div>
+    </div>
+    <div class="content" id="mainContent">
+
+      <!-- DASHBOARD -->
+      <div class="page" id="page-dashboard">
+        <div class="breadcrumb">Home › <b>Dashboard</b></div>
+        <div class="grid4" style="margin-bottom:14px">
+          <div class="stat" data-icon="💰"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Total Income</div><div class="stat-val" id="dashIncome">₹0</div><div class="stat-lbl">All Receipts</div></div>
+          <div class="stat" data-icon="📤"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Total Expenses</div><div class="stat-val" id="dashExpense">₹0</div><div class="stat-lbl">All Payments</div></div>
+          <div class="stat" data-icon="📊"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Net Balance</div><div class="stat-val" id="dashBalance" style="color:var(--success)">₹0</div><div class="stat-lbl">Surplus/Deficit</div></div>
+          <div class="stat" data-icon="👥"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Active Parties</div><div class="stat-val" id="dashParties">0</div><div class="stat-lbl">Students & Vendors</div></div>
+        </div>
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="card"><div class="card-head"><h3>📊 Monthly Overview</h3></div><div class="chart-container" id="dashChart"></div><div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--text2)"><span><span style="color:var(--primary)">█</span> Income</span><span><span style="color:var(--danger)">█</span> Expense</span></div></div>
+          <div class="card"><div class="card-head"><h3>💹 Income Breakdown</h3></div><div id="incomeBreakdown"></div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="card-head"><h3>🕐 Recent Transactions</h3><button class="btn btn-ghost btn-sm" onclick="nav('incomeExpense')">View All</button></div><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Party</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody id="dashTxns"></tbody></table></div></div>
+          <div class="card">
+            <div class="card-head"><h3>⏳ Pending Approvals</h3><button class="btn btn-ghost btn-sm" onclick="nav('approvals')">View All</button></div>
+            <div id="dashApprovals"></div>
+            <div class="sep"></div>
+            <div class="grid2" style="gap:8px">
+              <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--text2)">Receipts Today</div><div style="font-size:20px;font-weight:700;color:#fff;margin-top:3px" id="dashTodayR">0</div></div>
+              <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--text2)">Blacklisted</div><div style="font-size:20px;font-weight:700;color:var(--danger);margin-top:3px" id="dashBL">0</div></div>
+              <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--text2)">Vouchers Printed</div><div style="font-size:20px;font-weight:700;color:#fff;margin-top:3px" id="dashPrinted">0</div></div>
+              <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--text2)">Active Users</div><div style="font-size:20px;font-weight:700;color:var(--success);margin-top:3px" id="dashUsers">0</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASH RECEIPT -->
+      <div class="page" id="page-cashReceipt">
+        <div class="breadcrumb">Home › Transactions › <b>Cash Receipt</b></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head"><h3 id="crFormTitle">🧾 New Cash Receipt</h3><button class="btn btn-ghost btn-sm" onclick="resetCRForm()" id="crCancelBtn" style="display:none">✕ Cancel</button></div>
+            <div class="grid2">
+              <div class="fg"><label>Receipt No.</label><input id="cr-no" readonly></div>
+              <div class="fg"><label>Date</label><input id="cr-date" type="date"></div>
+              <div class="fg"><label>Party / Student</label><select id="cr-party"><option value="">-- Select Party --</option></select></div>
+              <div class="fg"><label>Fee Category</label><select id="cr-cat"></select></div>
+              <div class="fg"><label>Amount</label><input id="cr-amount" type="number" placeholder="0.00"></div>
+              <div class="fg"><label>Payment Mode</label><select id="cr-mode"><option>Cash</option><option>Cheque</option><option>Online Transfer</option><option>DD</option><option>UPI</option></select></div>
+              <div class="fg fgrow"><label>Narration</label><textarea id="cr-narration" rows="2" placeholder="Remarks..."></textarea></div>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+              <button class="btn btn-success" onclick="saveCashReceipt()" id="crSaveBtn">💾 Save Receipt</button>
+              <button class="btn btn-primary" onclick="printVoucher('cash')">🖨️ Print 2 Copies</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📋 Cash Receipt Records</h3>
+              <div style="display:flex;gap:6px">
+                <input id="crSearch" placeholder="Search..." style="width:120px;padding:5px 9px;font-size:11px" oninput="renderCRTable()">
+                <button class="btn btn-ghost btn-sm" onclick="syncAll()">🔄</button>
+              </div>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>No.</th><th>Party</th><th>Category</th><th>Amount</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody id="crTable"></tbody></table></div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text2)">Total: <b id="crTotal" class="pos">₹0</b></span><button class="btn btn-ghost btn-sm" onclick="exportCSV('cashReceipts')">📥 CSV</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTY PAYMENT -->
+      <div class="page" id="page-partyPayment">
+        <div class="breadcrumb">Home › Transactions › <b>Party Payment</b></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head"><h3 id="ppFormTitle">💸 Party Payment Entry</h3><button class="btn btn-ghost btn-sm" onclick="resetPPForm()" id="ppCancelBtn" style="display:none">✕ Cancel</button></div>
+            <div class="notice notice-warn">⚠️ Payment vouchers require Admin approval before printing.</div>
+            <div class="grid2">
+              <div class="fg"><label>Voucher No.</label><input id="pp-no" readonly></div>
+              <div class="fg"><label>Date</label><input id="pp-date" type="date"></div>
+              <div class="fg"><label>Pay To (Vendor)</label><select id="pp-party"><option value="">-- Select --</option></select></div>
+              <div class="fg"><label>Category</label><select id="pp-cat"><option>Salary</option><option>Maintenance</option><option>Supplies</option><option>Utilities</option><option>Equipment</option><option>Repairs</option><option>Other</option></select></div>
+              <div class="fg"><label>Amount</label><input id="pp-amount" type="number" placeholder="0.00"></div>
+              <div class="fg"><label>Payment Mode</label><select id="pp-mode"><option>Cash</option><option>Cheque</option><option>Bank Transfer</option><option>NEFT/RTGS</option><option>UPI</option></select></div>
+              <div class="fg fgrow"><label>Narration</label><textarea id="pp-narration" rows="2" placeholder="Payment details..."></textarea></div>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+              <button class="btn btn-warning" onclick="submitPPApproval()" id="ppSubmitBtn">📤 Submit for Approval</button>
+              <button class="btn btn-success" onclick="savePP()" id="ppSaveBtn" style="display:none">💾 Update</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📋 Payment Records</h3><input id="ppSearch" placeholder="Search..." style="width:140px;padding:5px 9px;font-size:11px" oninput="renderPPTable()"></div>
+            <div class="tbl-wrap"><table><thead><tr><th>No.</th><th>Party</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="ppTable"></tbody></table></div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text2)">Total: <b id="ppTotal" class="neg">₹0</b></span><button class="btn btn-ghost btn-sm" onclick="exportCSV('partyPayments')">📥 CSV</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MISC INCOME -->
+      <div class="page" id="page-miscIncome">
+        <div class="breadcrumb">Home › Transactions › <b>Misc Income</b></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head"><h3 id="miFormTitle">💰 Misc Income Entry</h3><button class="btn btn-ghost btn-sm" onclick="resetMIForm()" id="miCancelBtn" style="display:none">✕ Cancel</button></div>
+            <div class="grid2">
+              <div class="fg"><label>Receipt No.</label><input id="mi-no" readonly></div>
+              <div class="fg"><label>Date</label><input id="mi-date" type="date"></div>
+              <div class="fg"><label>Income Source</label><select id="mi-source"><option>Canteen Income</option><option>School Event</option><option>Donations</option><option>Rental Income</option><option>Interest Income</option><option>Sale of Assets</option><option>Other</option></select></div>
+              <div class="fg"><label>Received From</label><input id="mi-from" placeholder="Name / Description"></div>
+              <div class="fg"><label>Amount</label><input id="mi-amount" type="number" placeholder="0.00"></div>
+              <div class="fg"><label>Payment Mode</label><select id="mi-mode"><option>Cash</option><option>Cheque</option><option>Online</option><option>DD</option></select></div>
+              <div class="fg fgrow"><label>Narration</label><textarea id="mi-narration" rows="2" placeholder="Details..."></textarea></div>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+              <button class="btn btn-success" onclick="saveMI()" id="miSaveBtn">💾 Save</button>
+              <button class="btn btn-primary" onclick="printVoucher('misc')">🖨️ Print 2 Copies</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📋 Misc Income Records</h3><input id="miSearch" placeholder="Search..." style="width:140px;padding:5px 9px;font-size:11px" oninput="renderMITable()"></div>
+            <div class="tbl-wrap"><table><thead><tr><th>No.</th><th>Source</th><th>From</th><th>Amount</th><th>Date</th><th>Actions</th></tr></thead><tbody id="miTable"></tbody></table></div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text2)">Total: <b id="miTotal" class="pos">₹0</b></span><button class="btn btn-ghost btn-sm" onclick="exportCSV('miscIncome')">📥 CSV</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INCOME/EXPENSE -->
+      <div class="page" id="page-incomeExpense">
+        <div class="breadcrumb">Home › Accounting › <b>Income & Expense Tracker</b></div>
+        <div class="grid3" style="margin-bottom:14px">
+          <div class="stat" data-icon="💹"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Total Income</div><div class="stat-val" style="font-size:20px" id="ieIncome">₹0</div></div>
+          <div class="stat" data-icon="💸"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Total Expenses</div><div class="stat-val" style="font-size:20px" id="ieExpense">₹0</div></div>
+          <div class="stat" data-icon="⚖️"><div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase">Net Balance</div><div class="stat-val" style="font-size:20px;color:var(--success)" id="ieBalance">₹0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📒 Ledger</h3>
+            <div style="display:flex;gap:7px">
+              <select id="ieTypeFilter" style="width:auto;font-size:11px" onchange="renderIETable()"><option value="">All Types</option><option value="Income">Income</option><option value="Expense">Expense</option></select>
+              <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Print</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('ie')">📥 CSV</button>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Voucher</th><th>Category</th><th>Party</th><th>Narration</th><th>Type</th><th>Income</th><th>Expense</th><th>Balance</th></tr></thead><tbody id="ieTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- PARTY LEDGER -->
+      <div class="page" id="page-partyLedger">
+        <div class="breadcrumb">Home › Accounting › <b>Party-wise Ledger</b></div>
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head"><h3>🔍 Select Party</h3></div>
+            <div class="fg"><label>Party / Vendor</label><select id="ledgerParty" onchange="loadLedger()"><option value="">-- Select Party --</option></select></div>
+            <div id="ledgerPartyCard" style="display:none"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📅 Filter & Print</h3></div>
+            <div class="fg"><label>From Date</label><input id="ledgerFrom" type="date"></div>
+            <div class="fg"><label>To Date</label><input id="ledgerTo" type="date"></div>
+            <div style="display:flex;gap:7px">
+              <button class="btn btn-primary" onclick="loadLedger()">🔄 Load</button>
+              <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="ledgerTableCard" style="display:none">
+          <div class="card-head"><h3 id="ledgerTableTitle">📖 Party Statement</h3><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Print</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Voucher No.</th><th>Particular</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody id="ledgerTable"></tbody></table></div>
+          <div style="display:flex;justify-content:flex-end;gap:20px;padding:10px 0;font-size:12px">
+            <span>Dr: <b class="pos" id="ledgerDr">₹0</b></span><span>Cr: <b class="neg" id="ledgerCr">₹0</b></span><span>Balance: <b id="ledgerBal">₹0</b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTIES MASTER -->
+      <div class="page" id="page-parties">
+        <div class="breadcrumb">Home › Master › <b>Parties / Contacts</b></div>
+        <div class="card">
+          <div class="card-head"><h3>👥 Party Master</h3>
+            <div style="display:flex;gap:7px">
+              <input id="partySearch" placeholder="Search..." style="width:150px;padding:5px 9px;font-size:11px" oninput="renderPartiesTable()">
+              <select id="partyTypeFilter" style="width:auto;font-size:11px" onchange="renderPartiesTable()"><option value="">All</option><option>Student</option><option>Vendor</option><option>Staff</option><option>Parent</option></select>
+              <button class="btn btn-primary btn-sm" onclick="openPartyModal()">+ Add Party</button>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Phone</th><th>City</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="partiesTable"></tbody></table></div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text2)" id="partyCount"></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="page-users">
+        <div class="breadcrumb">Home › Admin › <b>User Management</b></div>
+        <div class="card">
+          <div class="card-head"><h3>👤 System Users</h3>
+            <div style="display:flex;gap:7px">
+              <input id="userSearch" placeholder="Search..." style="width:150px;padding:5px 9px;font-size:11px" oninput="renderUsersTable()">
+              <button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Add User</button>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>User</th><th>Username</th><th>Role</th><th>Permissions</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- APPROVALS -->
+      <div class="page" id="page-approvals">
+        <div class="breadcrumb">Home › Admin › <b>Payment Approvals</b></div>
+        <div class="card"><div class="card-head"><h3>⏳ Pending Approvals</h3></div><div class="tbl-wrap"><table><thead><tr><th>Voucher</th><th>Submitted By</th><th>Pay To</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="approvalsTable"></tbody></table></div></div>
+        <div class="card"><div class="card-head"><h3>✅ Approved Vouchers</h3></div><div class="tbl-wrap"><table><thead><tr><th>Voucher</th><th>Pay To</th><th>Amount</th><th>Approved By</th><th>Date</th><th>Actions</th></tr></thead><tbody id="approvedTable"></tbody></table></div></div>
+      </div>
+
+      <!-- BLACKLIST -->
+      <div class="page" id="page-blacklist">
+        <div class="breadcrumb">Home › Admin › <b>Blacklist Management</b></div>
+        <div class="card">
+          <div class="card-head"><h3>🚫 Blacklisted Parties</h3>
+            <div style="display:flex;gap:7px"><input id="blSearch" placeholder="Search..." style="width:150px;padding:5px 9px;font-size:11px" oninput="renderBLTable()"><button class="btn btn-danger btn-sm" onclick="openBLModal()">+ Add</button></div>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Party</th><th>Type</th><th>Reason</th><th>Details</th><th>Added By</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="blTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="page" id="page-notes">
+        <div class="breadcrumb">Home › Admin › <b>Notes & Reminders</b></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head"><h3 id="noteFormTitle">📝 Add Note</h3><button class="btn btn-ghost btn-sm" onclick="resetNoteForm()" id="noteCancelBtn" style="display:none">✕</button></div>
+            <div class="fg"><label>Title</label><input id="note-title" placeholder="Note title..."></div>
+            <div class="fg"><label>Assign To</label><select id="note-assign"><option value="All">All Users</option></select></div>
+            <div class="fg"><label>Priority</label><select id="note-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+            <div class="fg"><label>Note</label><textarea id="note-body" rows="4" placeholder="Write your note..."></textarea></div>
+            <button class="btn btn-primary" onclick="saveNote()" id="noteSaveBtn">📌 Save Note</button>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📋 All Notes</h3>
+              <select id="notePriorityFilter" style="width:auto;font-size:11px" onchange="renderNotes()"><option value="">All</option><option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option></select>
+            </div>
+            <div id="notesList" style="max-height:420px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="page" id="page-messages">
+        <div class="breadcrumb">Home › <b>Messages</b></div>
+        <div class="grid2" style="height:460px;align-items:stretch">
+          <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;margin-bottom:0">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:space-between">Conversations <button class="btn btn-primary btn-sm" onclick="openNewMsgModal()">+ New</button></div>
+            <div id="chatList" style="flex:1;overflow-y:auto"></div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;margin-bottom:0">
+            <div id="chatHeader" style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+              <div class="avatar" style="width:32px;height:32px;font-size:13px;background:var(--primary3);color:var(--primary)">?</div>
+              <div><div style="font-size:12.5px;font-weight:700;color:#fff">Select a conversation</div></div>
+            </div>
+            <div id="chatMessages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px"></div>
+            <div style="padding:10px;border-top:1px solid var(--border);display:flex;gap:7px">
+              <input id="msgInput" placeholder="Type a message..." style="flex:1;padding:7px 11px" onkeydown="if(event.key==='Enter')sendMsg()">
+              <button class="btn btn-primary btn-sm" onclick="sendMsg()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="breadcrumb">Home › <b>Settings</b></div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchSettingsTab('company',this)">🏫 Company</div>
+          <div class="tab" onclick="switchSettingsTab('currency',this)">💱 Currency</div>
+          <div class="tab" onclick="switchSettingsTab('academic',this)">📅 Academic</div>
+          <div class="tab" onclick="switchSettingsTab('voucher',this)">🧾 Voucher</div>
+          <div class="tab" onclick="switchSettingsTab('appearance',this)">🎨 Appearance</div>
+          <div class="tab" onclick="switchSettingsTab('gasurl',this)">🔗 Database URL</div>
+        </div>
+        <div class="tab-content active" id="stab-company">
+          <div class="card">
+            <div class="card-head"><h3>🏫 Company Information</h3></div>
+            <div class="grid2">
+              <div class="fg"><label>School Name</label><input id="s-name" value="Vidya Niketan School"></div>
+              <div class="fg"><label>Short Name</label><input id="s-short" value="VNS"></div>
+              <div class="fg"><label>Registration No.</label><input id="s-reg" value="EDU/2010/MH/00245"></div>
+              <div class="fg"><label>GST / Tax No.</label><input id="s-gst" value="27AABCV1234D1ZP"></div>
+              <div class="fg fgrow"><label>Address Line 1</label><input id="s-addr1" value="123, Education Lane, Near City Park"></div>
+              <div class="fg fgrow"><label>Address Line 2</label><input id="s-addr2" value="Knowledge City, Maharashtra - 411001"></div>
+              <div class="fg"><label>Phone</label><input id="s-phone" value="020-12345678"></div>
+              <div class="fg"><label>Mobile</label><input id="s-mobile" value="+91 98765 43210"></div>
+              <div class="fg"><label>Email</label><input id="s-email" value="accounts@vidyaniketan.edu.in"></div>
+              <div class="fg"><label>Website</label><input id="s-web" value="www.vidyaniketan.edu.in"></div>
+              <div class="fg fgrow"><label>Voucher Header</label><textarea id="s-header" rows="2">Vidya Niketan School — Committed to Excellence</textarea></div>
+              <div class="fg fgrow"><label>Voucher Footer</label><textarea id="s-footer" rows="2">This is a computer-generated receipt.</textarea></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:7px;margin-top:4px">
+              <button class="btn btn-success" onclick="saveSettings('company')">💾 Save to Google Sheets</button>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content" id="stab-currency">
+          <div class="card">
+            <div class="card-head"><h3>💱 Currency Settings</h3></div>
+            <div class="sec-label">Select Primary Currency</div>
+            <div id="currencyList"></div>
+            <div class="grid2" style="margin-top:14px">
+              <div class="fg"><label>Number Style</label><select id="s-numStyle" onchange="updateCurrPreview()"><option value="indian">Indian (1,23,456.00)</option><option value="intl">International (1,234,567.00)</option></select></div>
+              <div class="fg"><label>Decimal Places</label><select id="s-decPlaces" onchange="updateCurrPreview()"><option value="0">0 decimals</option><option value="2" selected>2 decimals</option></select></div>
+            </div>
+            <div class="preview-box"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Live Preview</div><div style="font-size:22px;font-weight:700;color:#fff" id="currPreview">₹ 4,82,500.00</div></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-success" onclick="saveSettings('currency')">💾 Save to Google Sheets</button></div>
+          </div>
+        </div>
+        <div class="tab-content" id="stab-academic">
+          <div class="card">
+            <div class="card-head"><h3>📅 Academic Year & Fee Categories</h3></div>
+            <div class="grid2">
+              <div class="fg"><label>Current Academic Year</label><select id="s-acadYear"><option>2024-25</option><option>2025-26</option><option>2023-24</option></select></div>
+              <div class="fg"><label>Financial Year Start</label><select><option>April 1</option><option>January 1</option><option>July 1</option></select></div>
+            </div>
+            <div class="sec-label">Fee Categories</div>
+            <div id="feeCatList"></div>
+            <div style="display:flex;gap:7px;margin-top:8px"><input id="newFeeCat" placeholder="New category name..." style="flex:1"><button class="btn btn-primary btn-sm" onclick="addFeeCat()">+ Add</button></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-success" onclick="saveSettings('academic')">💾 Save to Google Sheets</button></div>
+          </div>
+        </div>
+        <div class="tab-content" id="stab-voucher">
+          <div class="card">
+            <div class="card-head"><h3>🧾 Voucher Configuration</h3></div>
+            <div class="grid2">
+              <div class="fg"><label>Cash Receipt Prefix</label><input id="s-crPre" value="CR"></div>
+              <div class="fg"><label>Party Payment Prefix</label><input id="s-ppPre" value="PP"></div>
+              <div class="fg"><label>Misc Income Prefix</label><input id="s-miPre" value="MI"></div>
+              <div class="fg"><label>Number Padding</label><select id="s-numPad"><option value="4">4 digits — CR-0001</option><option value="5">5 digits — CR-00001</option></select></div>
+              <div class="fg"><label>Print Copies</label><select id="s-copies"><option value="2">2 Copies</option><option value="3">3 Copies</option><option value="1">1 Copy</option></select></div>
+            </div>
+            <div class="tog-row"><div class="tog-info"><div class="t1">Admin Approval Required for Party Payment</div></div><label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label></div>
+            <div class="tog-row"><div class="tog-info"><div class="t1">Amount in Words on Vouchers</div></div><label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-success" onclick="saveSettings('voucher')">💾 Save to Google Sheets</button></div>
+          </div>
+        </div>
+        <div class="tab-content" id="stab-appearance">
+          <div class="card">
+            <div class="card-head"><h3>🎨 Appearance</h3></div>
+            <div class="sec-label">Accent Color</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px" id="themeColors"></div>
+            <div class="grid2">
+              <div class="fg"><label>Date Format</label><select><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>DD MMM YYYY</option></select></div>
+              <div class="fg"><label>Language</label><select><option>English</option><option>Hindi</option><option>Marathi</option></select></div>
+            </div>
+            <div class="tog-row"><div class="tog-info"><div class="t1">Compact Sidebar</div></div><label class="tog"><input type="checkbox" id="s-compactSide" onchange="document.getElementById('sidebar').classList.toggle('mini',this.checked)"><span class="tog-sl"></span></label></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-success" onclick="saveSettings('appearance')">💾 Save</button></div>
+          </div>
+        </div>
+        <div class="tab-content" id="stab-gasurl">
+          <div class="card">
+            <div class="card-head"><h3>🔗 Google Sheets Database Connection</h3></div>
+            <div class="notice notice-info">ℹ️ This is the Google Apps Script Web App URL that connects to your Google Sheets database. All data is saved live to this spreadsheet.</div>
+            <div class="fg"><label>Google Apps Script Web App URL</label><input id="s-gasUrl" type="url" placeholder="https://script.google.com/macros/s/XXXXX/exec"></div>
+            <div id="gasTestResult" style="margin-top:8px;font-size:12px;display:none"></div>
+            <div style="display:flex;gap:7px;margin-top:8px">
+              <button class="btn btn-primary" onclick="testGASConnection()">🧪 Test Connection</button>
+              <button class="btn btn-success" onclick="saveGASUrlFromSettings()">💾 Save URL</button>
+            </div>
+            <div class="sep"></div>
+            <div class="card-head" style="padding:0 0 10px;margin-bottom:0"><h3>📊 Google Sheets Info</h3></div>
+            <div id="sheetInfo" style="font-size:12px;color:var(--text2);line-height:2">Loading sheet information...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="userModal" class="overlay" style="display:none"><div class="modal modal-lg">
+  <div class="modal-head"><h3 id="userModalTitle">Add New User</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('userModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="grid2">
+      <div class="fg"><label>Full Name</label><input id="um-name" placeholder="Full name"></div>
+      <div class="fg"><label>Username</label><input id="um-user" placeholder="Login username"></div>
+      <div class="fg"><label>Password</label><input id="um-pass" type="password" placeholder="Password"></div>
+      <div class="fg"><label>Role</label><select id="um-role"><option value="Administrator">Administrator</option><option value="Cashier">Cashier</option><option value="Accountant">Accountant</option><option value="Viewer">Viewer</option></select></div>
+      <div class="fg"><label>Email</label><input id="um-email" type="email" placeholder="Email"></div>
+      <div class="fg"><label>Mobile</label><input id="um-mobile" placeholder="Mobile"></div>
+      <div class="fg"><label>Status</label><select id="um-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+      <div class="fg"><label>Department</label><select id="um-dept"><option>Accounts</option><option>Admin Office</option><option>Front Desk</option><option>Management</option></select></div>
+    </div>
+    <div class="sec-label">Permissions</div><div class="perm-check" id="permCheck"></div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('userModal')">Cancel</button><button class="btn btn-success" onclick="saveUser()" id="userSaveBtn">💾 Save User</button></div>
+</div></div>
+
+<div id="partyModal" class="overlay" style="display:none"><div class="modal modal-lg">
+  <div class="modal-head"><h3 id="partyModalTitle">Add Party</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('partyModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="grid2">
+      <div class="fg"><label>Full Name</label><input id="pm-name" placeholder="Party name"></div>
+      <div class="fg"><label>Type</label><select id="pm-type"><option>Student</option><option>Vendor</option><option>Staff</option><option>Parent</option><option>Other</option></select></div>
+      <div class="fg"><label>Phone</label><input id="pm-phone" placeholder="Phone number"></div>
+      <div class="fg"><label>Email</label><input id="pm-email" type="email" placeholder="Email"></div>
+      <div class="fg"><label>Opening Balance (₹)</label><input id="pm-balance" type="number" placeholder="0"></div>
+      <div class="fg"><label>Balance Type</label><select id="pm-baltype"><option value="Dr">Debit (Dr) — Receivable</option><option value="Cr">Credit (Cr) — Payable</option></select></div>
+      <div class="fg fgrow"><label>Address</label><input id="pm-address" placeholder="Address"></div>
+      <div class="fg"><label>City</label><input id="pm-city" placeholder="City"></div>
+      <div class="fg"><label>State</label><input id="pm-state" placeholder="State"></div>
+      <div class="fg"><label>PAN / ID</label><input id="pm-pan" placeholder="ID number"></div>
+      <div class="fg"><label>Status</label><select id="pm-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+      <div class="fg fgrow"><label>Notes</label><textarea id="pm-notes" rows="2" placeholder="Additional notes..."></textarea></div>
+    </div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('partyModal')">Cancel</button><button class="btn btn-success" onclick="saveParty()" id="partySaveBtn">💾 Save Party</button></div>
+</div></div>
+
+<div id="deleteModal" class="overlay" style="display:none"><div class="modal modal-sm">
+  <div class="modal-head"><h3>⚠️ Confirm Delete</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('deleteModal')">✕</button></div>
+  <div class="modal-body"><div class="notice notice-danger">This cannot be undone. Delete <b id="deleteItemName">this record</b>?</div></div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button><button class="btn btn-danger" id="deleteConfirmBtn">🗑️ Delete</button></div>
+</div></div>
+
+<div id="blModal" class="overlay" style="display:none"><div class="modal modal-md">
+  <div class="modal-head"><h3 id="blModalTitle">🚫 Add to Blacklist</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('blModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="fg"><label>Party Name</label><input id="bl-partyName" placeholder="Party name"></div>
+    <div class="fg"><label>Type</label><select id="bl-type"><option>Student</option><option>Vendor</option><option>Parent</option><option>Other</option></select></div>
+    <div class="fg"><label>Reason</label><select id="bl-reason"><option>Non-payment of dues</option><option>Fraud / Cheating</option><option>Misconduct</option><option>Dishonoured Cheque</option><option>Other</option></select></div>
+    <div class="fg"><label>Details</label><textarea id="bl-details" rows="3" placeholder="Explain in detail..."></textarea></div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('blModal')">Cancel</button><button class="btn btn-danger" onclick="saveBlacklist()" id="blSaveBtn">🚫 Blacklist</button></div>
+</div></div>
+
+<div id="voucherModal" class="overlay" style="display:none"><div class="modal modal-xl">
+  <div class="modal-head"><h3>🖨️ Voucher Print Preview</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('voucherModal')">✕</button></div>
+  <div class="modal-body" id="voucherContent"></div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('voucherModal')">Close</button><button class="btn btn-primary" onclick="doPrint()">🖨️ Print</button></div>
+</div></div>
+
+<div id="newMsgModal" class="overlay" style="display:none"><div class="modal modal-sm">
+  <div class="modal-head"><h3>💬 New Message</h3><button class="btn btn-ghost btn-sm btn-icon" onclick="closeModal('newMsgModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="fg"><label>To</label><select id="nm-to"></select></div>
+    <div class="fg"><label>Message</label><textarea id="nm-body" rows="3" placeholder="Write your message..."></textarea></div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('newMsgModal')">Cancel</button><button class="btn btn-primary" onclick="sendNewMsg()">Send</button></div>
+</div></div>
+
+<div id="toast"></div>
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG & STATE
+// ═══════════════════════════════════════════════
+var GAS_URL = localStorage.getItem('gasUrl') || '';
+var DB = { parties:[], users:[], cashReceipts:[], partyPayments:[], miscIncome:[], blacklist:[], notes:[], messages:[], settings:{} };
+var S = {
+  user: null,
+  settings: {
+    company:{name:'Vidya Niketan School',short:'VNS',reg:'',gst:'',addr1:'',addr2:'',phone:'',mobile:'',email:'',web:'',header:'',footer:''},
+    currency:{code:'INR',symbol:'₹',name:'Indian Rupee'},
+    voucher:{crPre:'CR',ppPre:'PP',miPre:'MI',pad:4,copies:2},
+    feeCats:['Tuition Fee','Exam Fee','Transport Fee','Library Fee','Lab Fee','Sports Fee','Hostel Fee','Miscellaneous']
+  },
+  editingId:{cr:null,pp:null,mi:null,party:null,user:null,note:null,bl:null},
+  activeChatUser:'',
+  printedCount: parseInt(localStorage.getItem('printedCount')||'0')
+};
+var ALL_PERMS=[{key:'cash_receipt',label:'Cash Receipt'},{key:'party_payment',label:'Party Payment'},{key:'misc_income',label:'Misc Income'},{key:'view_reports',label:'View Reports'},{key:'parties',label:'Party Master'},{key:'manage_users',label:'Manage Users'},{key:'approvals',label:'Approvals'},{key:'blacklist',label:'Blacklist'},{key:'notes',label:'Notes'},{key:'settings',label:'Settings'}];
+var CURRENCIES=[{code:'INR',name:'Indian Rupee',symbol:'₹',flag:'🇮🇳'},{code:'USD',name:'US Dollar',symbol:'$',flag:'🇺🇸'},{code:'EUR',name:'Euro',symbol:'€',flag:'🇪🇺'},{code:'GBP',name:'British Pound',symbol:'£',flag:'🇬🇧'},{code:'NPR',name:'Nepali Rupee',symbol:'रू',flag:'🇳🇵'},{code:'AED',name:'UAE Dirham',symbol:'د.إ',flag:'🇦🇪'},{code:'LKR',name:'Sri Lankan Rupee',symbol:'Rs',flag:'🇱🇰'},{code:'BDT',name:'Bangladeshi Taka',symbol:'৳',flag:'🇧🇩'}];
+
+// ═══════════════════════════════════════════════
+//  API LAYER — Google Sheets via GAS
+// ═══════════════════════════════════════════════
+function apiGet(params) {
+  var url = GAS_URL + '?' + Object.keys(params).map(function(k){return k+'='+encodeURIComponent(params[k])}).join('&');
+  return fetch(url).then(function(r){return r.json()});
+}
+function apiPost(body) {
+  return fetch(GAS_URL, {method:'POST', body:JSON.stringify(body)}).then(function(r){return r.json()});
+}
+function dbUpsert(sheet, data) {
+  return apiPost({action:'upsert', sheet:sheet, data:data}).then(function(r){
+    if(r.error) throw new Error(r.error);
+    return r;
+  });
+}
+function dbDelete(sheet, id) {
+  return apiPost({action:'delete', sheet:sheet, id:id}).then(function(r){
+    if(r.error) throw new Error(r.error);
+    return r;
+  });
+}
+function syncAll() {
+  setSyncStatus('syncing');
+  setLoadMsg('Syncing with Google Sheets...');
+  return apiGet({action:'getAll'}).then(function(data){
+    if(data.error) throw new Error(data.error);
+    DB.parties        = data.parties        || [];
+    DB.users          = data.users          || [];
+    DB.cashReceipts   = data.cashReceipts   || [];
+    DB.partyPayments  = data.partyPayments  || [];
+    DB.miscIncome     = data.miscIncome     || [];
+    DB.blacklist      = data.blacklist      || [];
+    DB.notes          = data.notes          || [];
+    DB.messages       = data.messages       || [];
+    DB.settings       = data.settings       || [];
+    loadSettingsFromDB();
+    setSyncStatus('live');
+    updateApprovalBadge();
+    updateMsgBadge();
+    populateDropdowns();
+    refreshCurrentPage();
+    return data;
+  }).catch(function(e){
+    setSyncStatus('offline');
+    toast('Sync failed: '+e.message,'error');
+    throw e;
+  });
+}
+function setSyncStatus(state){
+  var el=document.getElementById('syncStatus');if(!el)return;
+  if(state==='live'){el.textContent='🟢 Live';el.className='tag tg';el.style.fontSize='10px'}
+  else if(state==='syncing'){el.textContent='🔄 Syncing';el.className='tag ty';el.style.fontSize='10px'}
+  else{el.textContent='🔴 Offline';el.className='tag tr';el.style.fontSize='10px'}
+}
+function setLoadMsg(m){var e=document.getElementById('loadMsg');if(e)e.textContent=m}
+function loadSettingsFromDB(){
+  var map={};
+  DB.settings.forEach(function(r){map[r.key]=r.value});
+  if(map['company.name'])S.settings.company.name=map['company.name'];
+  if(map['company.short'])S.settings.company.short=map['company.short'];
+  if(map['company.reg'])S.settings.company.reg=map['company.reg'];
+  if(map['company.gst'])S.settings.company.gst=map['company.gst'];
+  if(map['company.addr1'])S.settings.company.addr1=map['company.addr1'];
+  if(map['company.addr2'])S.settings.company.addr2=map['company.addr2'];
+  if(map['company.phone'])S.settings.company.phone=map['company.phone'];
+  if(map['company.mobile'])S.settings.company.mobile=map['company.mobile'];
+  if(map['company.email'])S.settings.company.email=map['company.email'];
+  if(map['company.web'])S.settings.company.web=map['company.web'];
+  if(map['company.header'])S.settings.company.header=map['company.header'];
+  if(map['company.footer'])S.settings.company.footer=map['company.footer'];
+  if(map['currency.code']){var cur=CURRENCIES.find(function(c){return c.code===map['currency.code']});if(cur)S.settings.currency=cur;}
+  if(map['voucher.crPre'])S.settings.voucher.crPre=map['voucher.crPre'];
+  if(map['voucher.ppPre'])S.settings.voucher.ppPre=map['voucher.ppPre'];
+  if(map['voucher.miPre'])S.settings.voucher.miPre=map['voucher.miPre'];
+  if(map['voucher.pad'])S.settings.voucher.pad=parseInt(map['voucher.pad'])||4;
+  if(map['voucher.copies'])S.settings.voucher.copies=parseInt(map['voucher.copies'])||2;
+  if(map['feeCats'])S.settings.feeCats=map['feeCats'].split(',');
+  var cb=document.getElementById('topCurrBadge');if(cb)cb.textContent=S.settings.currency.symbol+' '+S.settings.currency.code;
+  var sn=document.getElementById('s-name');if(sn)sn.value=S.settings.company.name;
+  updateFeeCatDropdowns();
+  updateSheetInfo();
+}
+function updateSheetInfo(){
+  var el=document.getElementById('sheetInfo');if(!el)return;
+  el.innerHTML='<span style="color:var(--success)">✓ Connected</span> to Google Sheets<br>'
+    +'Parties: <b style="color:#fff">'+DB.parties.length+'</b> &nbsp; '
+    +'Cash Receipts: <b style="color:#fff">'+DB.cashReceipts.length+'</b> &nbsp; '
+    +'Payments: <b style="color:#fff">'+DB.partyPayments.length+'</b><br>'
+    +'Misc Income: <b style="color:#fff">'+DB.miscIncome.length+'</b> &nbsp; '
+    +'Users: <b style="color:#fff">'+DB.users.length+'</b> &nbsp; '
+    +'Messages: <b style="color:#fff">'+DB.messages.length+'</b>';
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function fmt(n){return S.settings.currency.symbol+' '+Number(n||0).toLocaleString('en-IN')}
+function today(){return new Date().toISOString().split('T')[0]}
+function fmtDate(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function numPad(n,digits){return String(n).padStart(digits||4,'0')}
+function getParty(id){return DB.parties.find(function(p){return p.id===id})||{name:'Unknown',type:'Other'}}
+function hasPerm(p){if(!S.user)return false;return S.user.perms.indexOf(p)>-1||S.user.role==='Administrator'}
+function nextNo(prefix,items){
+  var max=0;
+  items.forEach(function(r){var m=r.no&&r.no.match(/(\d+)$/);if(m)max=Math.max(max,parseInt(m[1]))});
+  return prefix+'-'+new Date().getFullYear()+'-'+numPad(max+1,S.settings.voucher.pad);
+}
+function toast(msg,type){
+  if(!type)type='success';var t=document.getElementById('toast');var d=document.createElement('div');
+  var icons={success:'✅',error:'❌',warn:'⚠️',info:'ℹ️'};d.className='toast-msg';
+  d.innerHTML='<span>'+(icons[type]||'✅')+'</span><span>'+msg+'</span>';t.appendChild(d);
+  setTimeout(function(){d.classList.add('fadeout');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},300)},3000);
+}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function confirmDelete(label,cb){
+  document.getElementById('deleteItemName').textContent=label;
+  document.getElementById('deleteConfirmBtn').onclick=function(){cb();closeModal('deleteModal')};
+  openModal('deleteModal');
+}
+function populateDropdowns(){
+  function opts(arr){return arr.map(function(p){return'<option value="'+p.id+'">'+p.name+' ('+p.type+')</option>'}).join('')}
+  var crp=document.getElementById('cr-party');if(crp)crp.innerHTML='<option value="">-- Select Party --</option>'+opts(DB.parties);
+  var ppp=document.getElementById('pp-party');if(ppp)ppp.innerHTML='<option value="">-- Select --</option>'+opts(DB.parties.filter(function(p){return p.type==='Vendor'||p.type==='Staff'||p.type==='Other'}));
+  var lp=document.getElementById('ledgerParty');if(lp)lp.innerHTML='<option value="">-- Select Party --</option>'+opts(DB.parties);
+  var na=document.getElementById('note-assign');if(na)na.innerHTML='<option value="All">All Users</option>'+DB.users.map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join('');
+  var nm=document.getElementById('nm-to');if(nm&&S.user)nm.innerHTML=DB.users.filter(function(u){return u.username!==S.user.username}).map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join('');
+  updateFeeCatDropdowns();
+}
+function updateFeeCatDropdowns(){
+  var cats=S.settings.feeCats||['Tuition Fee','Exam Fee','Transport Fee'];
+  var crCat=document.getElementById('cr-cat');if(crCat)crCat.innerHTML=cats.map(function(c){return'<option>'+c+'</option>'}).join('');
+}
+function updateApprovalBadge(){
+  var n=DB.partyPayments.filter(function(p){return p.status==='pending'}).length;
+  var el=document.getElementById('approveBadge');if(el){el.textContent=n;el.style.display=n>0?'inline-flex':'none'}
+}
+function updateMsgBadge(){
+  if(!S.user)return;
+  var n=DB.messages.filter(function(m){return m.to===S.user.username&&m.read!=='true'&&m.read!==true}).length;
+  var el=document.getElementById('msgBadge');var el2=document.getElementById('msgBadgeTop');
+  if(el){el.textContent=n;el.style.display=n>0?'inline-flex':'none'}
+  if(el2){el2.textContent=n;el2.style.display=n>0?'inline-flex':'none'}
+}
+function refreshCurrentPage(){
+  var active=document.querySelector('.page.active');
+  if(!active)return;var id=active.id.replace('page-','');
+  var refreshers={dashboard:renderDashboard,cashReceipt:renderCRTable,partyPayment:renderPPTable,miscIncome:renderMITable,incomeExpense:renderIETable,partyLedger:function(){},parties:renderPartiesTable,users:renderUsersTable,approvals:renderApprovalsTable,blacklist:renderBLTable,notes:renderNotes,messages:renderMessages};
+  if(refreshers[id])refreshers[id]();
+}
+
+// ═══════════════════════════════════════════════
+//  SETUP & LOGIN
+// ═══════════════════════════════════════════════
+function saveGASUrl(){
+  var url=document.getElementById('gasUrlInput').value.trim();
+  if(!url||url.indexOf('script.google.com')<0){toast('Please enter a valid Google Apps Script URL','error');return}
+  localStorage.setItem('gasUrl',url);GAS_URL=url;
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('loadOverlay').style.display='flex';
+  bootApp();
+}
+function saveGASUrlFromSettings(){
+  var url=document.getElementById('s-gasUrl').value.trim();
+  if(!url){toast('Please enter a URL','error');return}
+  localStorage.setItem('gasUrl',url);GAS_URL=url;
+  toast('URL saved! Syncing...','success');syncAll();
+}
+function testGASConnection(){
+  var url=document.getElementById('s-gasUrl').value.trim();if(!url){toast('Enter URL first','error');return}
+  var old=GAS_URL;GAS_URL=url;
+  var el=document.getElementById('gasTestResult');el.style.display='block';el.innerHTML='<span style="color:var(--warning)">Testing connection...</span>';
+  apiGet({action:'ping'}).then(function(r){
+    if(r.ok)el.innerHTML='<span style="color:var(--success)">✅ Connected successfully! Server time: '+r.time+'</span>';
+    else el.innerHTML='<span style="color:var(--danger)">❌ Error: '+(r.error||'Unknown')+'</span>';
+  }).catch(function(e){el.innerHTML='<span style="color:var(--danger)">❌ Connection failed: '+e.message+'</span>';GAS_URL=old});
+}
+function resetGASUrl(){localStorage.removeItem('gasUrl');GAS_URL='';location.reload()}
+function bootApp(){
+  document.getElementById('loadOverlay').style.display='flex';
+  setLoadMsg('Connecting to Google Sheets...');
+  if(!GAS_URL){
+    document.getElementById('loadOverlay').style.display='none';
+    document.getElementById('setupScreen').style.display='flex';
+    return;
+  }
+  syncAll().then(function(){
+    document.getElementById('loadOverlay').style.display='none';
+    document.getElementById('loginScreen').style.display='flex';
+    var gasInput=document.getElementById('s-gasUrl');if(gasInput)gasInput.value=GAS_URL;
+  }).catch(function(e){
+    document.getElementById('loadOverlay').style.display='none';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('loginSyncDot').className='sync-dot offline';
+    document.getElementById('loginSyncText').textContent='Could not connect — check URL';
+    toast('Could not connect to Google Sheets','error');
+  });
+}
+function doLogin(){
+  var u=document.getElementById('li-user').value.trim();var p=document.getElementById('li-pass').value;
+  var found=DB.users.find(function(x){return x.username===u&&x.password===p});
+  if(!found){toast('Invalid username or password','error');return}
+  S.user=found;
+  S.user.perms=typeof found.perms==='string'?found.perms.split(','):found.perms||[];
+  // Update lastLogin
+  found.lastLogin=new Date().toLocaleString('en-IN');
+  dbUpsert('users',found);
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='flex';
+  document.getElementById('sbName').textContent=S.user.name;
+  document.getElementById('sbRole').textContent=S.user.role;
+  document.getElementById('sbAvatar').textContent=S.user.name[0];
+  document.getElementById('topAvatar').textContent=S.user.name[0];
+  buildNavMenu();initApp();nav('dashboard');
+  toast('Welcome, '+S.user.name+'! 👋','success');
+  // Auto-sync every 30s
+  setInterval(function(){syncAll().catch(function(){})},30000);
+}
+function doLogout(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
+  S.user=null;
+}
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+var NAV_ITEMS=[
+  {id:'dashboard',icon:'📊',label:'Dashboard',perm:'',section:'Main'},
+  {id:'messages',icon:'💬',label:'Messages',perm:'',section:'Main',badge:'msgBadge'},
+  {id:'cashReceipt',icon:'🧾',label:'Cash Receipt',perm:'cash_receipt',section:'Transactions'},
+  {id:'partyPayment',icon:'💸',label:'Party Payment',perm:'party_payment',section:'Transactions'},
+  {id:'miscIncome',icon:'💰',label:'Misc Income',perm:'misc_income',section:'Transactions'},
+  {id:'incomeExpense',icon:'📈',label:'Income & Expenses',perm:'view_reports',section:'Accounting'},
+  {id:'partyLedger',icon:'📒',label:'Party Ledger',perm:'view_reports',section:'Accounting'},
+  {id:'parties',icon:'👤',label:'Party Master',perm:'parties',section:'Master'},
+  {id:'users',icon:'👥',label:'User Management',perm:'manage_users',section:'Admin'},
+  {id:'approvals',icon:'✅',label:'Approvals',perm:'approvals',section:'Admin',badge:'approveBadge'},
+  {id:'blacklist',icon:'🚫',label:'Blacklist',perm:'blacklist',section:'Admin'},
+  {id:'notes',icon:'📝',label:'Notes',perm:'notes',section:'Admin'},
+  {id:'settings',icon:'⚙️',label:'Settings',perm:'settings',section:'Config'}
+];
+function buildNavMenu(){
+  var el=document.getElementById('navMenu');if(!el)return;
+  var html='',lastSec='';
+  NAV_ITEMS.forEach(function(item){
+    if(!item.perm||hasPerm(item.perm)){
+      if(item.section!==lastSec){html+='<div class="nav-label">'+item.section+'</div>';lastSec=item.section;}
+      html+='<div class="nav-item" id="nav-'+item.id+'" onclick="nav(\''+item.id+'\')">'
+        +'<span class="nav-icon">'+item.icon+'</span><span class="nav-txt">'+item.label+'</span>'
+        +(item.badge?'<span class="nav-badge" id="'+item.badge+'" style="display:none">0</span>':'')+'</div>';
+    }
+  });
+  el.innerHTML=html;
+}
+function nav(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');
+  var ni=document.getElementById('nav-'+page);if(ni)ni.classList.add('active');
+  var titles={dashboard:'📊 Dashboard',cashReceipt:'🧾 Cash Receipt',partyPayment:'💸 Party Payment',miscIncome:'💰 Misc Income',incomeExpense:'📈 Income & Expenses',partyLedger:'📒 Party Ledger',parties:'👤 Party Master',users:'👥 User Management',approvals:'✅ Approvals',blacklist:'🚫 Blacklist',notes:'📝 Notes',messages:'💬 Messages',settings:'⚙️ Settings'};
+  document.getElementById('pageTitle').textContent=titles[page]||page;
+  var refreshers={dashboard:renderDashboard,cashReceipt:function(){renderCRTable();setCRNo()},partyPayment:function(){renderPPTable();setPPNo()},miscIncome:function(){renderMITable();setMINo()},incomeExpense:renderIETable,partyLedger:initLedger,parties:renderPartiesTable,users:renderUsersTable,approvals:renderApprovalsTable,blacklist:renderBLTable,notes:renderNotes,messages:renderMessages,settings:initSettings};
+  if(refreshers[page])refreshers[page]();
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mini')}
+function initApp(){
+  setInterval(function(){var el=document.getElementById('topClock');if(el)el.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);
+  document.getElementById('topCurrBadge').textContent=S.settings.currency.symbol+' '+S.settings.currency.code;
+  document.querySelectorAll('input[type=date]').forEach(function(e){if(!e.value)e.value=today()});
+  setCRNo();setPPNo();setMINo();
+}
+function setCRNo(){var e=document.getElementById('cr-no');if(e)e.value=nextNo(S.settings.voucher.crPre,DB.cashReceipts)}
+function setPPNo(){var e=document.getElementById('pp-no');if(e)e.value=nextNo(S.settings.voucher.ppPre,DB.partyPayments)}
+function setMINo(){var e=document.getElementById('mi-no');if(e)e.value=nextNo(S.settings.voucher.miPre,DB.miscIncome)}
+
+// ═══════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDashboard(){
+  var totalIncome=DB.cashReceipts.reduce(function(s,r){return s+parseFloat(r.amount||0)},0)+DB.miscIncome.reduce(function(s,r){return s+parseFloat(r.amount||0)},0);
+  var totalExpense=DB.partyPayments.filter(function(p){return p.status==='approved'}).reduce(function(s,r){return s+parseFloat(r.amount||0)},0);
+  var el;
+  el=document.getElementById('dashIncome');if(el)el.textContent=fmt(totalIncome);
+  el=document.getElementById('dashExpense');if(el)el.textContent=fmt(totalExpense);
+  el=document.getElementById('dashBalance');if(el)el.textContent=fmt(totalIncome-totalExpense);
+  el=document.getElementById('dashParties');if(el)el.textContent=DB.parties.filter(function(p){return p.status==='active'}).length;
+  el=document.getElementById('dashUsers');if(el)el.textContent=DB.users.filter(function(u){return u.status==='active'}).length;
+  el=document.getElementById('dashBL');if(el)el.textContent=DB.blacklist.filter(function(b){return b.status==='active'}).length;
+  el=document.getElementById('dashPrinted');if(el)el.textContent=S.printedCount;
+  var t=today();el=document.getElementById('dashTodayR');if(el)el.textContent=DB.cashReceipts.filter(function(r){return r.date===t}).length;
+  buildDashChart();buildIncomeBreakdown();renderDashTxns();renderDashApprovals();
+}
+function buildDashChart(){
+  var el=document.getElementById('dashChart');if(!el)return;
+  var inc=[38,42,35,48,52,44,56,48,62,58,65,70],exp=[22,18,24,20,28,22,30,26,32,28,35,30],lbl=['A','M','J','J','A','S','O','N','D','J','F','M'],mx=70;
+  el.innerHTML=inc.map(function(v,i){
+    return '<div class="bar-grp" style="flex-direction:column;gap:0"><div style="flex:1;display:flex;align-items:flex-end;gap:2px"><div class="bar" style="height:'+Math.round(v/mx*90)+'%;background:var(--primary);opacity:.8;flex:1"></div><div class="bar" style="height:'+Math.round(exp[i]/mx*90)+'%;background:var(--danger);opacity:.7;flex:1"></div></div><div class="bar-lbl">'+lbl[i]+'</div></div>'
+  }).join('');
+}
+function buildIncomeBreakdown(){
+  var el=document.getElementById('incomeBreakdown');if(!el)return;
+  var items=[{label:'Tuition Fees',pct:49.7,color:'var(--primary)',amt:240000},{label:'Exam Fees',pct:17.6,color:'var(--success)',amt:85000},{label:'Transport',pct:15,color:'var(--info)',amt:72500},{label:'Misc Income',pct:17.7,color:'var(--warning)',amt:85000}];
+  el.innerHTML=items.map(function(i){return'<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>'+i.label+'</span><span class="pos">'+fmt(i.amt)+'</span></div><div class="progress"><div class="progress-fill" style="width:'+i.pct+'%;background:'+i.color+'"></div></div></div>'}).join('');
+}
+function renderDashTxns(){
+  var el=document.getElementById('dashTxns');if(!el)return;
+  var rows=[];
+  DB.cashReceipts.slice(0,3).forEach(function(r){rows.push({date:r.date,party:r.partyName,type:'Cash Receipt',amt:parseFloat(r.amount||0),status:'Received',pos:true})});
+  DB.partyPayments.slice(0,2).forEach(function(r){rows.push({date:r.date,party:r.partyName,type:'Party Payment',amt:parseFloat(r.amount||0),status:r.status,pos:false})});
+  rows.sort(function(a,b){return (b.date||'').localeCompare(a.date||'')});
+  el.innerHTML=rows.slice(0,6).map(function(r){
+    return '<tr><td>'+fmtDate(r.date)+'</td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r.party+'</td><td><span class="tag tb">'+r.type+'</span></td><td class="'+(r.pos?'pos':'neg')+'">'+fmt(r.amt)+'</td><td><span class="tag '+(r.status==='Received'||r.status==='approved'?'tg':r.status==='pending'?'ty':'tgr')+'">'+r.status+'</span></td></tr>'
+  }).join('');
+}
+function renderDashApprovals(){
+  var el=document.getElementById('dashApprovals');if(!el)return;
+  var pending=DB.partyPayments.filter(function(p){return p.status==='pending'});
+  if(!pending.length){el.innerHTML='<div class="empty">No pending approvals ✓</div>';return}
+  el.innerHTML=pending.slice(0,3).map(function(p){
+    return '<div style="background:var(--warning2);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 11px;margin-bottom:6px;display:flex;align-items:center;gap:8px"><span style="font-size:16px">📋</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#fff">'+p.no+'</div><div style="font-size:10px;color:var(--text2)">'+p.partyName+' · '+fmt(parseFloat(p.amount||0))+'</div></div>'+(hasPerm('approvals')?'<button class="btn btn-success btn-xs" onclick="approvePayment(\''+p.id+'\')">✓</button>':'')+'</div>'
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  CASH RECEIPT CRUD
+// ═══════════════════════════════════════════════
+function saveCashReceipt(){
+  var pid=document.getElementById('cr-party').value;var amt=parseFloat(document.getElementById('cr-amount').value);
+  if(!pid){toast('Please select a party','error');return}
+  if(!amt||amt<=0){toast('Please enter a valid amount','error');return}
+  var party=getParty(pid);
+  var isEdit=!!S.editingId.cr;
+  var rec;
+  if(isEdit){
+    rec=DB.cashReceipts.find(function(x){return x.id===S.editingId.cr});
+    if(rec){rec.party=pid;rec.partyName=party.name;rec.cat=document.getElementById('cr-cat').value;rec.amount=amt;rec.mode=document.getElementById('cr-mode').value;rec.date=document.getElementById('cr-date').value;rec.narration=document.getElementById('cr-narration').value}
+  }else{
+    rec={id:uid(),no:nextNo(S.settings.voucher.crPre,DB.cashReceipts),party:pid,partyName:party.name,cat:document.getElementById('cr-cat').value,amount:amt,mode:document.getElementById('cr-mode').value,date:document.getElementById('cr-date').value,narration:document.getElementById('cr-narration').value,createdBy:S.user.username,createdAt:new Date().toISOString()};
+    DB.cashReceipts.unshift(rec);
+  }
+  var btn=document.getElementById('crSaveBtn');if(btn){btn.textContent='⏳ Saving...';btn.disabled=true}
+  dbUpsert('cashReceipts',rec).then(function(){
+    toast(isEdit?'Receipt updated!':'Receipt saved! No: '+rec.no,'success');
+    resetCRForm();renderCRTable();renderIETable();renderDashboard();
+    if(btn){btn.textContent='💾 Save Receipt';btn.disabled=false}
+  }).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='💾 Save Receipt';btn.disabled=false}});
+}
+function editCR(id){
+  var r=DB.cashReceipts.find(function(x){return x.id===id});if(!r)return;
+  S.editingId.cr=id;
+  document.getElementById('cr-no').value=r.no;document.getElementById('cr-party').value=r.party;document.getElementById('cr-cat').value=r.cat;
+  document.getElementById('cr-amount').value=r.amount;document.getElementById('cr-mode').value=r.mode;document.getElementById('cr-date').value=r.date;document.getElementById('cr-narration').value=r.narration||'';
+  document.getElementById('crFormTitle').textContent='✏️ Edit Cash Receipt';document.getElementById('crCancelBtn').style.display='';document.getElementById('crSaveBtn').textContent='💾 Update Receipt';
+  nav('cashReceipt');window.scrollTo(0,0);
+}
+function deleteCR(id){
+  var r=DB.cashReceipts.find(function(x){return x.id===id});
+  confirmDelete(r?r.no:'this receipt',function(){
+    var btn=document.getElementById('deleteConfirmBtn');if(btn){btn.textContent='⏳ Deleting...';btn.disabled=true}
+    dbDelete('cashReceipts',id).then(function(){
+      DB.cashReceipts=DB.cashReceipts.filter(function(x){return x.id!==id});
+      renderCRTable();renderIETable();renderDashboard();toast('Receipt deleted','warn');
+      if(btn){btn.textContent='🗑️ Delete';btn.disabled=false}closeModal('deleteModal');
+    }).catch(function(e){toast('Delete failed: '+e.message,'error');if(btn){btn.textContent='🗑️ Delete';btn.disabled=false}closeModal('deleteModal')});
+  });
+}
+function resetCRForm(){
+  S.editingId.cr=null;document.getElementById('crFormTitle').textContent='🧾 New Cash Receipt';document.getElementById('crCancelBtn').style.display='none';document.getElementById('crSaveBtn').textContent='💾 Save Receipt';
+  ['cr-party','cr-amount','cr-narration'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('cr-mode').value='Cash';document.getElementById('cr-date').value=today();setCRNo();
+}
+function renderCRTable(){
+  var el=document.getElementById('crTable');if(!el)return;
+  var q=(document.getElementById('crSearch').value||'').toLowerCase();
+  var rows=DB.cashReceipts.filter(function(r){
+    var m=!q||(r.partyName&&r.partyName.toLowerCase().indexOf(q)>-1)||(r.no&&r.no.toLowerCase().indexOf(q)>-1);
+    if(S.user&&S.user.role!=='Administrator')return m&&r.createdBy===S.user.username;return m;
+  });
+  if(!rows.length){el.innerHTML='<tr><td colspan="7"><div class="empty">No records found</div></td></tr>';document.getElementById('crTotal').textContent='₹0';return}
+  el.innerHTML=rows.map(function(r){
+    return '<tr><td style="font-weight:600;color:var(--primary);font-size:11px">'+r.no+'</td><td>'+r.partyName+'</td><td><span class="tag tb">'+r.cat+'</span></td><td class="pos">'+fmt(parseFloat(r.amount||0))+'</td><td>'+fmtDate(r.date)+'</td><td style="font-size:10px;color:var(--text2)">'+r.createdBy+'</td>'
+      +'<td class="tbl-actions"><button class="btn btn-primary btn-xs" onclick="printVoucher(\'cash\',\''+r.id+'\')">🖨️</button><button class="btn btn-info btn-xs" onclick="editCR(\''+r.id+'\')">✏️</button><button class="btn btn-danger btn-xs" onclick="deleteCR(\''+r.id+'\')">🗑️</button></td></tr>'
+  }).join('');
+  document.getElementById('crTotal').textContent=fmt(rows.reduce(function(s,r){return s+parseFloat(r.amount||0)},0));
+}
+
+// ═══════════════════════════════════════════════
+//  PARTY PAYMENT CRUD
+// ═══════════════════════════════════════════════
+function submitPPApproval(){
+  var pid=document.getElementById('pp-party').value;var amt=parseFloat(document.getElementById('pp-amount').value);
+  if(!pid){toast('Please select a party','error');return}if(!amt||amt<=0){toast('Please enter a valid amount','error');return}
+  var party=getParty(pid);
+  var rec={id:uid(),no:nextNo(S.settings.voucher.ppPre,DB.partyPayments),party:pid,partyName:party.name,cat:document.getElementById('pp-cat').value,amount:amt,mode:document.getElementById('pp-mode').value,date:document.getElementById('pp-date').value,narration:document.getElementById('pp-narration').value,status:'pending',submittedBy:S.user.username,approvedBy:'',createdBy:S.user.username,createdAt:new Date().toISOString()};
+  DB.partyPayments.unshift(rec);
+  var btn=document.getElementById('ppSubmitBtn');if(btn){btn.textContent='⏳ Submitting...';btn.disabled=true}
+  dbUpsert('partyPayments',rec).then(function(){
+    toast('Submitted for approval — No: '+rec.no,'info');resetPPForm();renderPPTable();updateApprovalBadge();renderDashboard();
+    if(btn){btn.textContent='📤 Submit for Approval';btn.disabled=false}
+  }).catch(function(e){toast('Submit failed: '+e.message,'error');if(btn){btn.textContent='📤 Submit for Approval';btn.disabled=false}});
+}
+function savePP(){
+  var r=DB.partyPayments.find(function(x){return x.id===S.editingId.pp});
+  if(!r)return;var pid=document.getElementById('pp-party').value;var party=getParty(pid);
+  r.party=pid;r.partyName=party.name;r.cat=document.getElementById('pp-cat').value;r.amount=parseFloat(document.getElementById('pp-amount').value)||0;r.mode=document.getElementById('pp-mode').value;r.date=document.getElementById('pp-date').value;r.narration=document.getElementById('pp-narration').value;
+  dbUpsert('partyPayments',r).then(function(){toast('Payment updated!','success');resetPPForm();renderPPTable();renderApprovalsTable();updateApprovalBadge()}).catch(function(e){toast('Update failed: '+e.message,'error')});
+}
+function editPP(id){
+  var r=DB.partyPayments.find(function(x){return x.id===id});if(!r)return;
+  if(r.status==='approved'&&!hasPerm('approvals')){toast('Approved vouchers cannot be edited','error');return}
+  S.editingId.pp=id;
+  document.getElementById('pp-no').value=r.no;document.getElementById('pp-party').value=r.party;document.getElementById('pp-cat').value=r.cat;
+  document.getElementById('pp-amount').value=r.amount;document.getElementById('pp-mode').value=r.mode;document.getElementById('pp-date').value=r.date;document.getElementById('pp-narration').value=r.narration||'';
+  document.getElementById('ppFormTitle').textContent='✏️ Edit Payment Entry';document.getElementById('ppCancelBtn').style.display='';
+  document.getElementById('ppSubmitBtn').style.display='none';document.getElementById('ppSaveBtn').style.display='';
+  nav('partyPayment');
+}
+function deletePP(id){
+  var r=DB.partyPayments.find(function(x){return x.id===id});
+  if(r&&r.status==='approved'&&!hasPerm('approvals')){toast('Cannot delete an approved voucher','error');return}
+  confirmDelete(r?r.no:'this payment',function(){
+    dbDelete('partyPayments',id).then(function(){DB.partyPayments=DB.partyPayments.filter(function(x){return x.id!==id});renderPPTable();renderApprovalsTable();updateApprovalBadge();toast('Payment deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+function resetPPForm(){
+  S.editingId.pp=null;document.getElementById('ppFormTitle').textContent='💸 Party Payment Entry';document.getElementById('ppCancelBtn').style.display='none';
+  document.getElementById('ppSubmitBtn').style.display='';document.getElementById('ppSaveBtn').style.display='none';
+  ['pp-party','pp-amount','pp-narration'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('pp-date').value=today();setPPNo();
+}
+function renderPPTable(){
+  var el=document.getElementById('ppTable');if(!el)return;
+  var q=(document.getElementById('ppSearch').value||'').toLowerCase();
+  var rows=DB.partyPayments.filter(function(r){
+    var m=!q||(r.partyName&&r.partyName.toLowerCase().indexOf(q)>-1)||(r.no&&r.no.toLowerCase().indexOf(q)>-1);
+    if(S.user&&S.user.role!=='Administrator')return m&&r.createdBy===S.user.username;return m;
+  });
+  if(!rows.length){el.innerHTML='<tr><td colspan="6"><div class="empty">No records found</div></td></tr>';document.getElementById('ppTotal').textContent='₹0';return}
+  el.innerHTML=rows.map(function(r){
+    return '<tr><td style="font-weight:600;color:var(--warning);font-size:11px">'+r.no+'</td><td>'+r.partyName+'</td><td class="neg">'+fmt(parseFloat(r.amount||0))+'</td><td><span class="tag '+(r.status==='approved'?'tg':r.status==='pending'?'ty':'tr')+'">'+r.status+'</span></td><td>'+fmtDate(r.date)+'</td>'
+      +'<td class="tbl-actions">'+(r.status==='approved'?'<button class="btn btn-primary btn-xs" onclick="printVoucher(\'payment\',\''+r.id+'\')">🖨️</button>':'<span style="font-size:10px;color:var(--text3)">Awaiting</span>')
+      +(hasPerm('approvals')||r.createdBy===S.user.username?'<button class="btn btn-info btn-xs" onclick="editPP(\''+r.id+'\')">✏️</button>':'')
+      +'<button class="btn btn-danger btn-xs" onclick="deletePP(\''+r.id+'\')">🗑️</button></td></tr>'
+  }).join('');
+  document.getElementById('ppTotal').textContent=fmt(rows.reduce(function(s,r){return s+parseFloat(r.amount||0)},0));
+}
+
+// ═══════════════════════════════════════════════
+//  MISC INCOME CRUD
+// ═══════════════════════════════════════════════
+function saveMI(){
+  var amt=parseFloat(document.getElementById('mi-amount').value);var from=document.getElementById('mi-from').value.trim();
+  if(!from){toast('Please enter received from','error');return}if(!amt||amt<=0){toast('Please enter a valid amount','error');return}
+  var isEdit=!!S.editingId.mi;var rec;
+  if(isEdit){
+    rec=DB.miscIncome.find(function(x){return x.id===S.editingId.mi});
+    if(rec){rec.source=document.getElementById('mi-source').value;rec.from=from;rec.amount=amt;rec.mode=document.getElementById('mi-mode').value;rec.date=document.getElementById('mi-date').value;rec.narration=document.getElementById('mi-narration').value}
+  }else{
+    rec={id:uid(),no:nextNo(S.settings.voucher.miPre,DB.miscIncome),source:document.getElementById('mi-source').value,from:from,amount:amt,mode:document.getElementById('mi-mode').value,date:document.getElementById('mi-date').value,narration:document.getElementById('mi-narration').value,createdBy:S.user.username,createdAt:new Date().toISOString()};
+    DB.miscIncome.unshift(rec);
+  }
+  var btn=document.getElementById('miSaveBtn');if(btn){btn.textContent='⏳ Saving...';btn.disabled=true}
+  dbUpsert('miscIncome',rec).then(function(){
+    toast(isEdit?'Updated!':'Saved! No: '+rec.no,'success');resetMIForm();renderMITable();renderIETable();renderDashboard();
+    if(btn){btn.textContent='💾 Save';btn.disabled=false}
+  }).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='💾 Save';btn.disabled=false}});
+}
+function editMI(id){
+  var r=DB.miscIncome.find(function(x){return x.id===id});if(!r)return;
+  S.editingId.mi=id;
+  document.getElementById('mi-no').value=r.no;document.getElementById('mi-source').value=r.source;document.getElementById('mi-from').value=r.from;
+  document.getElementById('mi-amount').value=r.amount;document.getElementById('mi-mode').value=r.mode;document.getElementById('mi-date').value=r.date;document.getElementById('mi-narration').value=r.narration||'';
+  document.getElementById('miFormTitle').textContent='✏️ Edit Misc Income';document.getElementById('miCancelBtn').style.display='';document.getElementById('miSaveBtn').textContent='💾 Update';nav('miscIncome');
+}
+function deleteMI(id){
+  var r=DB.miscIncome.find(function(x){return x.id===id});
+  confirmDelete(r?r.no:'this entry',function(){
+    dbDelete('miscIncome',id).then(function(){DB.miscIncome=DB.miscIncome.filter(function(x){return x.id!==id});renderMITable();renderIETable();toast('Deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+function resetMIForm(){
+  S.editingId.mi=null;document.getElementById('miFormTitle').textContent='💰 Misc Income Entry';document.getElementById('miCancelBtn').style.display='none';document.getElementById('miSaveBtn').textContent='💾 Save';
+  ['mi-from','mi-amount','mi-narration'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('mi-date').value=today();setMINo();
+}
+function renderMITable(){
+  var el=document.getElementById('miTable');if(!el)return;
+  var q=(document.getElementById('miSearch').value||'').toLowerCase();
+  var rows=DB.miscIncome.filter(function(r){
+    var m=!q||(r.source&&r.source.toLowerCase().indexOf(q)>-1)||(r.from&&r.from.toLowerCase().indexOf(q)>-1);
+    if(S.user&&S.user.role!=='Administrator')return m&&r.createdBy===S.user.username;return m;
+  });
+  if(!rows.length){el.innerHTML='<tr><td colspan="6"><div class="empty">No records</div></td></tr>';document.getElementById('miTotal').textContent='₹0';return}
+  el.innerHTML=rows.map(function(r){
+    return '<tr><td style="font-weight:600;color:var(--success);font-size:11px">'+r.no+'</td><td><span class="tag tb">'+r.source+'</span></td><td>'+r.from+'</td><td class="pos">'+fmt(parseFloat(r.amount||0))+'</td><td>'+fmtDate(r.date)+'</td>'
+      +'<td class="tbl-actions"><button class="btn btn-primary btn-xs" onclick="printVoucher(\'misc\',\''+r.id+'\')">🖨️</button><button class="btn btn-info btn-xs" onclick="editMI(\''+r.id+'\')">✏️</button><button class="btn btn-danger btn-xs" onclick="deleteMI(\''+r.id+'\')">🗑️</button></td></tr>'
+  }).join('');
+  document.getElementById('miTotal').textContent=fmt(rows.reduce(function(s,r){return s+parseFloat(r.amount||0)},0));
+}
+
+// ═══════════════════════════════════════════════
+//  INCOME/EXPENSE TABLE
+// ═══════════════════════════════════════════════
+function renderIETable(){
+  var el=document.getElementById('ieTable');if(!el)return;
+  var typeF=document.getElementById('ieTypeFilter').value||'';
+  var rows=[];
+  DB.cashReceipts.forEach(function(r){rows.push({date:r.date,vno:r.no,cat:r.cat,party:r.partyName,narration:r.narration,type:'Income',dr:parseFloat(r.amount||0),cr:0})});
+  DB.miscIncome.forEach(function(r){rows.push({date:r.date,vno:r.no,cat:r.source,party:r.from,narration:r.narration,type:'Income',dr:parseFloat(r.amount||0),cr:0})});
+  DB.partyPayments.filter(function(p){return p.status==='approved'}).forEach(function(r){rows.push({date:r.date,vno:r.no,cat:r.cat,party:r.partyName,narration:r.narration,type:'Expense',dr:0,cr:parseFloat(r.amount||0)})});
+  rows.sort(function(a,b){return (b.date||'').localeCompare(a.date||'')});
+  if(typeF)rows=rows.filter(function(r){return r.type===typeF});
+  var totalDr=0,totalCr=0;
+  rows.forEach(function(r){totalDr+=r.dr;totalCr+=r.cr;r.running=totalDr-totalCr});
+  var ie=document.getElementById('ieIncome');if(ie)ie.textContent=fmt(totalDr);
+  var iex=document.getElementById('ieExpense');if(iex)iex.textContent=fmt(totalCr);
+  var ieb=document.getElementById('ieBalance');if(ieb){ieb.textContent=fmt(totalDr-totalCr);ieb.style.color=totalDr>=totalCr?'var(--success)':'var(--danger)'}
+  if(!rows.length){el.innerHTML='<tr><td colspan="9"><div class="empty">No records found</div></td></tr>';return}
+  el.innerHTML=rows.map(function(r){
+    return '<tr><td>'+fmtDate(r.date)+'</td><td style="font-weight:600;color:var(--primary);font-size:11px">'+r.vno+'</td><td><span class="tag tb" style="font-size:10px">'+(r.cat||'')+'</span></td><td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(r.party||'')+'</td><td style="font-size:11px;color:var(--text2)">'+(r.narration||'')+'</td><td><span class="tag '+(r.type==='Income'?'tg':'tr')+'">'+r.type+'</span></td><td class="pos">'+(r.dr?fmt(r.dr):'')+'</td><td class="neg">'+(r.cr?fmt(r.cr):'')+'</td><td style="font-weight:600;font-size:11px">'+fmt(r.running)+'</td></tr>'
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  PARTY LEDGER
+// ═══════════════════════════════════════════════
+function initLedger(){
+  var e1=document.getElementById('ledgerFrom');if(e1&&!e1.value)e1.value=new Date(new Date().setMonth(0,1)).toISOString().split('T')[0];
+  var e2=document.getElementById('ledgerTo');if(e2&&!e2.value)e2.value=today();
+}
+function loadLedger(){
+  var pid=document.getElementById('ledgerParty').value;
+  document.getElementById('ledgerTableCard').style.display='none';document.getElementById('ledgerPartyCard').style.display='none';
+  if(!pid)return;
+  var party=getParty(pid);var isBL=DB.blacklist.some(function(b){return b.partyId===pid&&b.status==='active'});
+  document.getElementById('ledgerPartyCard').style.display='block';
+  document.getElementById('ledgerPartyCard').innerHTML='<div style="background:var(--bg3);border-radius:8px;padding:11px"><div style="font-size:13px;font-weight:700;color:#fff">'+party.name+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+party.type+(party.city?' · '+party.city:'')+'</div><div style="margin-top:6px;font-size:11px;display:flex;gap:8px">'+(party.phone?'📞 '+party.phone:'')+(isBL?'<span class="tag tr">🚫 Blacklisted</span>':'<span class="tag tg">✓ Active</span>')+'</div></div>';
+  var rows=[];
+  rows.push({date:'',vno:'OB-001',part:'Opening Balance',dr:parseFloat(party.balance||0),cr:0});
+  DB.cashReceipts.filter(function(r){return r.party===pid}).forEach(function(r){rows.push({date:r.date,vno:r.no,part:r.cat,dr:parseFloat(r.amount||0),cr:0})});
+  DB.partyPayments.filter(function(r){return r.party===pid&&r.status==='approved'}).forEach(function(r){rows.push({date:r.date,vno:r.no,part:r.cat+' - Payment',dr:0,cr:parseFloat(r.amount||0)})});
+  rows.sort(function(a,b){if(!a.date)return -1;if(!b.date)return 1;return a.date.localeCompare(b.date)});
+  var bal=0,totalDr=0,totalCr=0;
+  rows.forEach(function(r){bal+=r.dr-r.cr;r.running=bal;totalDr+=r.dr;totalCr+=r.cr});
+  document.getElementById('ledgerTableCard').style.display='block';
+  document.getElementById('ledgerTableTitle').textContent='📖 '+party.name+' — Statement';
+  document.getElementById('ledgerDr').textContent=fmt(totalDr);document.getElementById('ledgerCr').textContent=fmt(totalCr);
+  document.getElementById('ledgerBal').textContent=fmt(bal);document.getElementById('ledgerBal').className=bal>=0?'pos':'neg';
+  document.getElementById('ledgerTable').innerHTML=rows.map(function(r){
+    return '<tr><td>'+(r.date?fmtDate(r.date):'Opening')+'</td><td style="font-size:11px;color:var(--primary)">'+r.vno+'</td><td>'+r.part+'</td><td class="pos">'+(r.dr?fmt(r.dr):'')+'</td><td class="neg">'+(r.cr?fmt(r.cr):'')+'</td><td style="font-weight:600">'+fmt(r.running)+'</td></tr>'
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  PARTIES CRUD
+// ═══════════════════════════════════════════════
+function renderPartiesTable(){
+  var el=document.getElementById('partiesTable');if(!el)return;
+  var q=(document.getElementById('partySearch').value||'').toLowerCase();var tf=document.getElementById('partyTypeFilter').value||'';
+  var rows=DB.parties.filter(function(p){return(!q||(p.name&&p.name.toLowerCase().indexOf(q)>-1)||p.id.toLowerCase().indexOf(q)>-1)&&(!tf||p.type===tf)});
+  var cnt=document.getElementById('partyCount');if(cnt)cnt.textContent='Showing '+rows.length+' of '+DB.parties.length+' parties';
+  if(!rows.length){el.innerHTML='<tr><td colspan="8"><div class="empty">No parties found</div></td></tr>';return}
+  el.innerHTML=rows.map(function(p){
+    return '<tr><td style="font-size:11px;color:var(--text3)">'+p.id+'</td><td style="font-weight:600;color:#fff">'+p.name+'</td>'
+      +'<td><span class="tag '+(p.type==='Student'?'tb':p.type==='Vendor'?'ty':p.type==='Staff'?'tp':'tgr')+'">'+p.type+'</span></td>'
+      +'<td style="font-size:11px">'+(p.phone||'—')+'</td><td style="font-size:11px">'+(p.city||'—')+'</td>'
+      +'<td class="'+(p.baltype==='Dr'?'pos':'neg')+'">'+fmt(parseFloat(p.balance||0))+' '+(p.baltype||'Dr')+'</td>'
+      +'<td><span class="tag '+(p.status==='active'?'tg':'tgr')+'">'+p.status+'</span></td>'
+      +'<td class="tbl-actions"><button class="btn btn-ghost btn-xs" onclick="nav(\'partyLedger\');document.getElementById(\'ledgerParty\').value=\''+p.id+'\';loadLedger()">📒</button><button class="btn btn-info btn-xs" onclick="openPartyModal(\''+p.id+'\')">✏️</button><button class="btn btn-danger btn-xs" onclick="deleteParty(\''+p.id+'\')">🗑️</button></td></tr>'
+  }).join('');
+}
+function openPartyModal(id){
+  S.editingId.party=id||null;
+  if(id){
+    var p=DB.parties.find(function(x){return x.id===id});if(!p)return;
+    document.getElementById('partyModalTitle').textContent='✏️ Edit Party';document.getElementById('partySaveBtn').textContent='💾 Update Party';
+    document.getElementById('pm-name').value=p.name;document.getElementById('pm-type').value=p.type;document.getElementById('pm-phone').value=p.phone||'';
+    document.getElementById('pm-email').value=p.email||'';document.getElementById('pm-balance').value=p.balance||0;document.getElementById('pm-baltype').value=p.baltype||'Dr';
+    document.getElementById('pm-address').value=p.address||'';document.getElementById('pm-city').value=p.city||'';document.getElementById('pm-state').value=p.state||'';
+    document.getElementById('pm-pan').value=p.pan||'';document.getElementById('pm-status').value=p.status;document.getElementById('pm-notes').value=p.notes||'';
+  }else{
+    document.getElementById('partyModalTitle').textContent='➕ Add Party';document.getElementById('partySaveBtn').textContent='💾 Save Party';
+    ['pm-name','pm-phone','pm-email','pm-address','pm-city','pm-state','pm-pan','pm-notes'].forEach(function(i){var e=document.getElementById(i);if(e)e.value=''});
+    document.getElementById('pm-balance').value=0;document.getElementById('pm-baltype').value='Dr';document.getElementById('pm-status').value='active';
+  }
+  openModal('partyModal');
+}
+function saveParty(){
+  var name=document.getElementById('pm-name').value.trim();if(!name){toast('Please enter party name','error');return}
+  var rec;
+  if(S.editingId.party){
+    rec=DB.parties.find(function(x){return x.id===S.editingId.party});
+    if(rec){rec.name=name;rec.type=document.getElementById('pm-type').value;rec.phone=document.getElementById('pm-phone').value;rec.email=document.getElementById('pm-email').value;rec.balance=parseFloat(document.getElementById('pm-balance').value)||0;rec.baltype=document.getElementById('pm-baltype').value;rec.address=document.getElementById('pm-address').value;rec.city=document.getElementById('pm-city').value;rec.state=document.getElementById('pm-state').value;rec.pan=document.getElementById('pm-pan').value;rec.status=document.getElementById('pm-status').value;rec.notes=document.getElementById('pm-notes').value}
+  }else{
+    rec={id:'P'+uid(),name:name,type:document.getElementById('pm-type').value,phone:document.getElementById('pm-phone').value,email:document.getElementById('pm-email').value,balance:parseFloat(document.getElementById('pm-balance').value)||0,baltype:document.getElementById('pm-baltype').value,address:document.getElementById('pm-address').value,city:document.getElementById('pm-city').value,state:document.getElementById('pm-state').value,pan:document.getElementById('pm-pan').value,status:document.getElementById('pm-status').value,notes:document.getElementById('pm-notes').value,createdBy:S.user.username,createdAt:new Date().toISOString()};
+    DB.parties.push(rec);
+  }
+  var btn=document.getElementById('partySaveBtn');if(btn){btn.textContent='⏳ Saving...';btn.disabled=true}
+  dbUpsert('parties',rec).then(function(){
+    toast(S.editingId.party?'Party updated!':'Party added!','success');closeModal('partyModal');renderPartiesTable();populateDropdowns();
+    if(btn){btn.textContent='💾 Save Party';btn.disabled=false}
+  }).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='💾 Save Party';btn.disabled=false}});
+}
+function deleteParty(id){
+  var p=DB.parties.find(function(x){return x.id===id});
+  confirmDelete(p?p.name:'this party',function(){
+    dbDelete('parties',id).then(function(){DB.parties=DB.parties.filter(function(x){return x.id!==id});renderPartiesTable();populateDropdowns();toast('Party deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  USER CRUD
+// ═══════════════════════════════════════════════
+function renderUsersTable(){
+  var el=document.getElementById('usersTable');if(!el)return;
+  var q=(document.getElementById('userSearch').value||'').toLowerCase();
+  var rows=DB.users.filter(function(u){return !q||(u.name&&u.name.toLowerCase().indexOf(q)>-1)||u.username.toLowerCase().indexOf(q)>-1});
+  var colors=['var(--primary3)','var(--success2)','var(--info2)','var(--warning2)'];var tc=['var(--primary)','var(--success)','var(--info)','var(--warning)'];
+  el.innerHTML=rows.map(function(u,i){
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:11px;background:'+colors[i%4]+';color:'+tc[i%4]+'">'+(u.name?u.name[0]:'?')+'</div><div><div style="font-size:12px;font-weight:600;color:#fff">'+u.name+'</div><div style="font-size:10px;color:var(--text2)">'+(u.email||'—')+'</div></div></div></td>'
+      +'<td style="font-size:11px;color:var(--text2)">'+u.username+'</td>'
+      +'<td><span class="tag '+(u.role==='Administrator'?'tp':u.role==='Cashier'?'tb':u.role==='Accountant'?'ty':'tgr')+'">'+u.role+'</span></td>'
+      +'<td style="font-size:10px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(u.perms||'')+'</td>'
+      +'<td><span class="tag '+(u.status==='active'?'tg':'tgr')+'">'+u.status+'</span></td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+(u.lastLogin||'—')+'</td>'
+      +'<td class="tbl-actions"><button class="btn btn-info btn-xs" onclick="openUserModal(\''+u.id+'\')">✏️</button><button class="btn btn-warning btn-xs" onclick="toggleUserStatus(\''+u.id+'\')">'+(u.status==='active'?'🔒':'🔓')+'</button>'+(u.username!=='admin'?'<button class="btn btn-danger btn-xs" onclick="deleteUser(\''+u.id+'\')">🗑️</button>':'')+'</td></tr>'
+  }).join('');
+}
+function openUserModal(id){
+  S.editingId.user=id||null;
+  var perms=[];
+  if(id){var u=DB.users.find(function(x){return x.id===id});if(u)perms=typeof u.perms==='string'?u.perms.split(','):u.perms||[]}else{perms=['cash_receipt','view_reports']}
+  document.getElementById('permCheck').innerHTML=ALL_PERMS.map(function(p){return'<div class="perm-item"><input type="checkbox" id="perm-'+p.key+'"'+(perms.indexOf(p.key)>-1?' checked':'')+'><label for="perm-'+p.key+'" style="cursor:pointer">'+p.label+'</label></div>'}).join('');
+  if(id){
+    var u=DB.users.find(function(x){return x.id===id});if(!u)return;
+    document.getElementById('userModalTitle').textContent='✏️ Edit User';document.getElementById('userSaveBtn').textContent='💾 Update User';
+    document.getElementById('um-name').value=u.name;document.getElementById('um-user').value=u.username;document.getElementById('um-pass').value='';document.getElementById('um-pass').placeholder='Leave blank to keep current';
+    document.getElementById('um-role').value=u.role;document.getElementById('um-email').value=u.email||'';document.getElementById('um-mobile').value=u.mobile||'';document.getElementById('um-status').value=u.status;document.getElementById('um-dept').value=u.dept||'Accounts';
+  }else{
+    document.getElementById('userModalTitle').textContent='➕ Add New User';document.getElementById('userSaveBtn').textContent='💾 Create User';
+    ['um-name','um-user','um-email','um-mobile'].forEach(function(i){var e=document.getElementById(i);if(e)e.value=''});document.getElementById('um-pass').value='';document.getElementById('um-pass').placeholder='Password';document.getElementById('um-role').value='Cashier';document.getElementById('um-status').value='active';
+  }
+  openModal('userModal');
+}
+function saveUser(){
+  var name=document.getElementById('um-name').value.trim();var username=document.getElementById('um-user').value.trim();
+  if(!name||!username){toast('Name and username are required','error');return}
+  var perms=ALL_PERMS.filter(function(p){return document.getElementById('perm-'+p.key)&&document.getElementById('perm-'+p.key).checked}).map(function(p){return p.key}).join(',');
+  var rec;
+  if(S.editingId.user){
+    rec=DB.users.find(function(x){return x.id===S.editingId.user});
+    if(rec){rec.name=name;rec.username=username;rec.role=document.getElementById('um-role').value;rec.email=document.getElementById('um-email').value;rec.mobile=document.getElementById('um-mobile').value;rec.status=document.getElementById('um-status').value;rec.dept=document.getElementById('um-dept').value;rec.perms=perms;var np=document.getElementById('um-pass').value;if(np)rec.password=np}
+  }else{
+    var pass=document.getElementById('um-pass').value;if(!pass){toast('Password is required','error');return}
+    if(DB.users.find(function(u){return u.username===username})){toast('Username already exists','error');return}
+    rec={id:'U'+uid(),name:name,username:username,password:pass,role:document.getElementById('um-role').value,email:document.getElementById('um-email').value,mobile:document.getElementById('um-mobile').value,dept:document.getElementById('um-dept').value,status:'active',lastLogin:'Never',created:fmtDate(today()),perms:perms};
+    DB.users.push(rec);
+  }
+  var btn=document.getElementById('userSaveBtn');if(btn){btn.textContent='⏳ Saving...';btn.disabled=true}
+  dbUpsert('users',rec).then(function(){
+    toast(S.editingId.user?'User updated!':'User created!','success');closeModal('userModal');renderUsersTable();populateDropdowns();
+    if(btn){btn.textContent='💾 Save User';btn.disabled=false}
+  }).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='💾 Save User';btn.disabled=false}});
+}
+function deleteUser(id){
+  var u=DB.users.find(function(x){return x.id===id});if(u&&u.username==='admin'){toast('Cannot delete the main admin','error');return}
+  confirmDelete(u?u.name:'this user',function(){
+    dbDelete('users',id).then(function(){DB.users=DB.users.filter(function(x){return x.id!==id});renderUsersTable();toast('User deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+function toggleUserStatus(id){
+  var u=DB.users.find(function(x){return x.id===id});if(!u)return;if(u.username==='admin'){toast('Cannot deactivate admin','error');return}
+  u.status=u.status==='active'?'inactive':'active';
+  dbUpsert('users',u).then(function(){renderUsersTable();toast(u.name+(u.status==='active'?' activated':' deactivated'),u.status==='active'?'success':'warn')}).catch(function(e){toast('Update failed: '+e.message,'error')});
+}
+
+// ═══════════════════════════════════════════════
+//  APPROVALS
+// ═══════════════════════════════════════════════
+function renderApprovalsTable(){
+  var pending=DB.partyPayments.filter(function(p){return p.status==='pending'});
+  var approved=DB.partyPayments.filter(function(p){return p.status==='approved'});
+  var pt=document.getElementById('approvalsTable');
+  if(pt)pt.innerHTML=pending.length?pending.map(function(p){
+    return '<tr><td style="font-weight:600;color:var(--warning)">'+p.no+'</td><td>'+p.submittedBy+'</td><td>'+p.partyName+'</td><td class="neg">'+fmt(parseFloat(p.amount||0))+'</td><td>'+fmtDate(p.date)+'</td><td><span class="tag ty">pending</span></td><td class="tbl-actions"><button class="btn btn-success btn-xs" onclick="approvePayment(\''+p.id+'\')">✓ Approve</button><button class="btn btn-danger btn-xs" onclick="rejectPayment(\''+p.id+'\')">✗ Reject</button><button class="btn btn-info btn-xs" onclick="editPP(\''+p.id+'\')">✏️</button></td></tr>'
+  }).join(''):'<tr><td colspan="7"><div class="empty">No pending approvals ✓</div></td></tr>';
+  var at=document.getElementById('approvedTable');
+  if(at)at.innerHTML=approved.length?approved.map(function(p){
+    return '<tr><td style="font-weight:600;color:var(--success)">'+p.no+'</td><td>'+p.partyName+'</td><td class="neg">'+fmt(parseFloat(p.amount||0))+'</td><td>'+(p.approvedBy||'')+'</td><td>'+fmtDate(p.date)+'</td><td class="tbl-actions"><button class="btn btn-primary btn-xs" onclick="printVoucher(\'payment\',\''+p.id+'\')">🖨️ Print</button><button class="btn btn-danger btn-xs" onclick="deletePP(\''+p.id+'\')">🗑️</button></td></tr>'
+  }).join(''):'<tr><td colspan="6"><div class="empty">No approved vouchers yet</div></td></tr>';
+  updateApprovalBadge();
+}
+function approvePayment(id){
+  var p=DB.partyPayments.find(function(x){return x.id===id});if(!p)return;
+  p.status='approved';p.approvedBy=S.user.username;
+  dbUpsert('partyPayments',p).then(function(){renderApprovalsTable();renderPPTable();renderDashboard();updateApprovalBadge();toast('Payment '+p.no+' approved!','success')}).catch(function(e){toast('Approve failed: '+e.message,'error')});
+}
+function rejectPayment(id){
+  var p=DB.partyPayments.find(function(x){return x.id===id});if(!p)return;
+  p.status='rejected';
+  dbUpsert('partyPayments',p).then(function(){renderApprovalsTable();renderPPTable();updateApprovalBadge();toast('Payment rejected','warn')}).catch(function(e){toast('Reject failed: '+e.message,'error')});
+}
+
+// ═══════════════════════════════════════════════
+//  BLACKLIST
+// ═══════════════════════════════════════════════
+function renderBLTable(){
+  var el=document.getElementById('blTable');if(!el)return;
+  var q=(document.getElementById('blSearch').value||'').toLowerCase();
+  var rows=DB.blacklist.filter(function(b){return !q||(b.partyName&&b.partyName.toLowerCase().indexOf(q)>-1)||b.reason.toLowerCase().indexOf(q)>-1});
+  if(!rows.length){el.innerHTML='<tr><td colspan="8"><div class="empty">No blacklisted parties</div></td></tr>';return}
+  el.innerHTML=rows.map(function(b){
+    return '<tr><td style="font-weight:600;color:#fff">'+(b.partyName||'')+'</td><td><span class="tag tgr">'+(b.type||'—')+'</span></td><td style="font-size:11px">'+b.reason+'</td><td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(b.details||'—')+'</td><td style="font-size:11px">'+b.addedBy+'</td><td>'+fmtDate(b.date)+'</td><td><span class="tag '+(b.status==='active'?'tr':'tgr')+'">'+b.status+'</span></td>'
+      +'<td class="tbl-actions"><button class="btn btn-warning btn-xs" onclick="toggleBL(\''+b.id+'\')">'+(b.status==='active'?'Remove':'Restore')+'</button><button class="btn btn-info btn-xs" onclick="openBLModal(\''+b.id+'\')">✏️</button><button class="btn btn-danger btn-xs" onclick="deleteBL(\''+b.id+'\')">🗑️</button></td></tr>'
+  }).join('');
+  var d=document.getElementById('dashBL');if(d)d.textContent=DB.blacklist.filter(function(b){return b.status==='active'}).length;
+}
+function openBLModal(id){
+  S.editingId.bl=id||null;
+  if(id){
+    var b=DB.blacklist.find(function(x){return x.id===id});if(!b)return;
+    document.getElementById('blModalTitle').textContent='✏️ Edit Blacklist Entry';document.getElementById('blSaveBtn').textContent='💾 Update';
+    document.getElementById('bl-partyName').value=b.partyName||'';document.getElementById('bl-type').value=b.type||'Other';document.getElementById('bl-reason').value=b.reason;document.getElementById('bl-details').value=b.details||'';
+  }else{
+    document.getElementById('blModalTitle').textContent='🚫 Add to Blacklist';document.getElementById('blSaveBtn').textContent='🚫 Blacklist';
+    ['bl-partyName','bl-details'].forEach(function(i){var e=document.getElementById(i);if(e)e.value=''});document.getElementById('bl-reason').value='Non-payment of dues';
+  }
+  openModal('blModal');
+}
+function saveBlacklist(){
+  var partyName=document.getElementById('bl-partyName').value.trim();if(!partyName){toast('Please enter party name','error');return}
+  var rec;
+  if(S.editingId.bl){
+    rec=DB.blacklist.find(function(x){return x.id===S.editingId.bl});
+    if(rec){rec.partyName=partyName;rec.type=document.getElementById('bl-type').value;rec.reason=document.getElementById('bl-reason').value;rec.details=document.getElementById('bl-details').value}
+  }else{
+    rec={id:'BL'+uid(),partyId:'',partyName:partyName,type:document.getElementById('bl-type').value,reason:document.getElementById('bl-reason').value,details:document.getElementById('bl-details').value,addedBy:S.user.username,date:today(),status:'active'};
+    DB.blacklist.unshift(rec);
+  }
+  var btn=document.getElementById('blSaveBtn');if(btn){btn.textContent='⏳...';btn.disabled=true}
+  dbUpsert('blacklist',rec).then(function(){toast(S.editingId.bl?'Updated!':'Added to blacklist!','warn');closeModal('blModal');renderBLTable();if(btn){btn.textContent='🚫 Blacklist';btn.disabled=false}}).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='🚫 Blacklist';btn.disabled=false}});
+}
+function toggleBL(id){
+  var b=DB.blacklist.find(function(x){return x.id===id});if(!b)return;
+  b.status=b.status==='active'?'removed':'active';
+  dbUpsert('blacklist',b).then(function(){renderBLTable();toast(b.status==='active'?'Restored':'Removed from blacklist',b.status==='active'?'warn':'success')}).catch(function(e){toast('Update failed: '+e.message,'error')});
+}
+function deleteBL(id){
+  var b=DB.blacklist.find(function(x){return x.id===id});
+  confirmDelete(b?b.partyName:'this entry',function(){
+    dbDelete('blacklist',id).then(function(){DB.blacklist=DB.blacklist.filter(function(x){return x.id!==id});renderBLTable();toast('Deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  NOTES
+// ═══════════════════════════════════════════════
+function renderNotes(){
+  var el=document.getElementById('notesList');if(!el)return;
+  var pf=document.getElementById('notePriorityFilter').value||'';
+  var rows=DB.notes.filter(function(n){return !pf||n.priority===pf}).sort(function(a,b){var o={urgent:0,high:1,normal:2};return(o[a.priority]||2)-(o[b.priority]||2)});
+  if(!rows.length){el.innerHTML='<div class="empty">No notes yet</div>';return}
+  el.innerHTML=rows.map(function(n){
+    return '<div style="background:var(--bg3);border-radius:8px;padding:11px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;gap:6px"><span style="font-size:12.5px;font-weight:700;color:#fff;flex:1">'+n.title+'</span><span class="tag '+(n.priority==='urgent'?'tr':n.priority==='high'?'ty':'tb')+'">'+n.priority+'</span></div><p style="font-size:11.5px;color:var(--text2);margin-bottom:6px;line-height:1.5">'+n.body+'</p><div style="display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--text3)"><span>→ '+(n.assign==='All'?'All Users':n.assign)+' · '+fmtDate(n.date)+'</span><div class="tbl-actions"><button class="btn btn-info btn-xs" onclick="editNote(\''+n.id+'\')">✏️</button><button class="btn btn-danger btn-xs" onclick="deleteNote(\''+n.id+'\')">🗑️</button></div></div></div>'
+  }).join('');
+}
+function saveNote(){
+  var title=document.getElementById('note-title').value.trim();var body=document.getElementById('note-body').value.trim();
+  if(!title||!body){toast('Title and content are required','error');return}
+  var rec;
+  if(S.editingId.note){
+    rec=DB.notes.find(function(x){return x.id===S.editingId.note});
+    if(rec){rec.title=title;rec.assign=document.getElementById('note-assign').value;rec.priority=document.getElementById('note-priority').value;rec.body=body}
+  }else{
+    rec={id:'N'+uid(),title:title,assign:document.getElementById('note-assign').value,priority:document.getElementById('note-priority').value,body:body,createdBy:S.user.username,date:today()};
+    DB.notes.unshift(rec);
+  }
+  var btn=document.getElementById('noteSaveBtn');if(btn){btn.textContent='⏳...';btn.disabled=true}
+  dbUpsert('notes',rec).then(function(){toast(S.editingId.note?'Note updated!':'Note saved!','success');resetNoteForm();renderNotes();if(btn){btn.textContent='📌 Save Note';btn.disabled=false}}).catch(function(e){toast('Save failed: '+e.message,'error');if(btn){btn.textContent='📌 Save Note';btn.disabled=false}});
+}
+function editNote(id){
+  var n=DB.notes.find(function(x){return x.id===id});if(!n)return;
+  S.editingId.note=id;
+  document.getElementById('note-title').value=n.title;document.getElementById('note-assign').value=n.assign;document.getElementById('note-priority').value=n.priority;document.getElementById('note-body').value=n.body;
+  document.getElementById('noteFormTitle').textContent='✏️ Edit Note';document.getElementById('noteCancelBtn').style.display='';document.getElementById('noteSaveBtn').textContent='💾 Update Note';
+}
+function deleteNote(id){
+  var n=DB.notes.find(function(x){return x.id===id});
+  confirmDelete(n?n.title:'this note',function(){
+    dbDelete('notes',id).then(function(){DB.notes=DB.notes.filter(function(x){return x.id!==id});renderNotes();toast('Note deleted','warn');closeModal('deleteModal')}).catch(function(e){toast('Delete failed: '+e.message,'error');closeModal('deleteModal')});
+  });
+}
+function resetNoteForm(){
+  S.editingId.note=null;document.getElementById('noteFormTitle').textContent='📝 Add Note';document.getElementById('noteCancelBtn').style.display='none';document.getElementById('noteSaveBtn').textContent='📌 Save Note';
+  ['note-title','note-body'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});document.getElementById('note-priority').value='normal';
+}
+
+// ═══════════════════════════════════════════════
+//  MESSAGES
+// ═══════════════════════════════════════════════
+function renderMessages(){buildChatList();buildChatMessages()}
+function buildChatList(){
+  var el=document.getElementById('chatList');if(!el)return;
+  var contacts=DB.users.filter(function(u){return u.username!==S.user.username});
+  if(!contacts.length){el.innerHTML='<div class="empty">No other users</div>';return}
+  var colors=['var(--primary3)','var(--success2)','var(--info2)','var(--warning2)'];var tc=['var(--primary)','var(--success)','var(--info)','var(--warning)'];
+  el.innerHTML=contacts.map(function(u,i){
+    var msgs=DB.messages.filter(function(m){return(m.from===u.username&&m.to===S.user.username)||(m.from===S.user.username&&m.to===u.username)});
+    var last=msgs[msgs.length-1];var unread=msgs.filter(function(m){return m.to===S.user.username&&m.read!=='true'}).length;
+    return '<div onclick="setActiveChat(\''+u.username+'\')" style="display:flex;align-items:center;gap:9px;padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);background:'+(S.activeChatUser===u.username?'var(--bg3)':'transparent')+'">'
+      +'<div class="avatar" style="width:34px;height:34px;font-size:13px;background:'+colors[i%4]+';color:'+tc[i%4]+'">'+(u.name?u.name[0]:'?')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12.5px;font-weight:600;color:#fff">'+u.name+'</span><span style="font-size:10px;color:var(--text3)">'+(last?last.time:'')+'</span></div>'
+      +'<div style="font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(last?last.text:'No messages yet')+'</div></div>'
+      +(unread?'<span class="nav-badge" style="position:static;display:inline-flex">'+unread+'</span>':'')+'</div>'
+  }).join('');
+}
+function setActiveChat(username){
+  S.activeChatUser=username;
+  var toMark=DB.messages.filter(function(m){return m.to===S.user.username&&m.from===username&&m.read!=='true'});
+  toMark.forEach(function(m){m.read='true';dbUpsert('messages',m)});
+  buildChatList();buildChatMessages();updateMsgBadge();
+}
+function buildChatMessages(){
+  var el=document.getElementById('chatMessages');if(!el)return;
+  var hdr=document.getElementById('chatHeader');var contact=DB.users.find(function(u){return u.username===S.activeChatUser});
+  if(hdr&&contact){hdr.innerHTML='<div class="avatar" style="width:32px;height:32px;font-size:13px;background:var(--primary3);color:var(--primary)">'+(contact.name?contact.name[0]:'?')+'</div><div><div style="font-size:12.5px;font-weight:700;color:#fff">'+contact.name+'</div><div style="font-size:10px;color:var(--success)">● '+(contact.status==='active'?'Online':'Offline')+'</div></div>'}
+  if(!S.activeChatUser){el.innerHTML='<div class="empty">Select a conversation</div>';return}
+  var msgs=DB.messages.filter(function(m){return(m.from===S.user.username&&m.to===S.activeChatUser)||(m.from===S.activeChatUser&&m.to===S.user.username)});
+  el.innerHTML=msgs.map(function(m){var isMe=m.from===S.user.username;return'<div style="display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start')+'"><div style="max-width:70%;padding:8px 12px;border-radius:'+(isMe?'12px 12px 2px 12px':'12px 12px 12px 2px')+';background:'+(isMe?'rgba(79,142,247,.2)':'var(--bg3)')+';color:var(--text);font-size:12.5px">'+m.text+'</div><span style="font-size:9.5px;color:var(--text3);margin-top:2px">'+m.time+'</span></div>'}).join('');
+  el.scrollTop=el.scrollHeight;
+}
+function sendMsg(){
+  var inp=document.getElementById('msgInput');if(!inp||!inp.value.trim()||!S.activeChatUser)return;
+  var rec={id:'MSG'+uid(),from:S.user.username,to:S.activeChatUser,text:inp.value.trim(),time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),date:today(),read:'false'};
+  DB.messages.push(rec);inp.value='';buildChatList();buildChatMessages();
+  dbUpsert('messages',rec).catch(function(e){toast('Message not saved: '+e.message,'error')});
+}
+function openNewMsgModal(){populateDropdowns();openModal('newMsgModal')}
+function sendNewMsg(){
+  var to=document.getElementById('nm-to').value;var body=document.getElementById('nm-body').value.trim();
+  if(!body){toast('Please enter a message','error');return}
+  var rec={id:'MSG'+uid(),from:S.user.username,to:to,text:body,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),date:today(),read:'false'};
+  DB.messages.push(rec);S.activeChatUser=to;closeModal('newMsgModal');renderMessages();
+  dbUpsert('messages',rec).then(function(){toast('Message sent!','success')}).catch(function(e){toast('Send failed: '+e.message,'error')});
+}
+
+// ═══════════════════════════════════════════════
+//  VOUCHER PRINT
+// ═══════════════════════════════════════════════
+function printVoucher(type,id){
+  var data={};var co=S.settings.company;
+  if(type==='cash'){var r=id?DB.cashReceipts.find(function(x){return x.id===id}):DB.cashReceipts[0];if(!r)return;data={no:r.no,date:r.date,title:'Cash Receipt Voucher',label:'Received From',party:r.partyName,cat:r.cat,mode:r.mode,amount:parseFloat(r.amount||0),narration:r.narration||'—',by:r.createdBy,approved:''}}
+  else if(type==='misc'){var r=id?DB.miscIncome.find(function(x){return x.id===id}):DB.miscIncome[0];if(!r)return;data={no:r.no,date:r.date,title:'Misc Income Receipt',label:'Received From',party:r.from,cat:r.source,mode:r.mode,amount:parseFloat(r.amount||0),narration:r.narration||'—',by:r.createdBy,approved:''}}
+  else if(type==='payment'){var r=id?DB.partyPayments.find(function(x){return x.id===id}):DB.partyPayments.find(function(p){return p.status==='approved'});if(!r){toast('No approved voucher found','error');return}data={no:r.no,date:r.date,title:'Party Payment Voucher',label:'Paid To',party:r.partyName,cat:r.cat,mode:r.mode,amount:parseFloat(r.amount||0),narration:r.narration||'—',by:r.submittedBy,approved:r.approvedBy}}
+  var copies=S.settings.voucher.copies||2;
+  function vHtml(label){
+    return '<div style="margin-bottom:8px"><div class="vp-copy">'+label+'</div><div class="voucher-wrap"><div class="vph"><h2>'+co.name+'</h2><p>'+(co.addr1||'')+(co.addr2?', '+co.addr2:'')+'</p><p>Tel: '+(co.phone||'')+(co.email?' | '+co.email:'')+'</p><h3>'+data.title+'</h3></div><div class="vpr"><span>Voucher No.:</span><b>'+data.no+'</b></div><div class="vpr"><span>Date:</span><span>'+fmtDate(data.date)+'</span></div><div class="vpr"><span>'+data.label+':</span><b>'+data.party+'</b></div><div class="vpr"><span>Category:</span><span>'+data.cat+'</span></div><div class="vpr"><span>Mode:</span><span>'+data.mode+'</span></div><div class="vpr"><span>Narration:</span><span>'+data.narration+'</span></div><div class="vpr"><span>Prepared By:</span><span>'+data.by+'</span></div>'+(data.approved?'<div class="vpr"><span>Approved By:</span><span>'+data.approved+'</span></div>':'')+'<div class="vpt"><span>Amount:</span><span>'+fmt(data.amount)+'/-</span></div><div style="font-size:11px;color:#475569;margin-top:4px;font-style:italic">Amount in Words: '+amtToWords(data.amount)+'</div><div style="display:flex;justify-content:space-between;margin-top:24px;font-size:11px"><div style="text-align:center;width:110px"><div style="border-top:1px solid #000;padding-top:3px">Prepared By</div></div><div style="text-align:center;width:110px"><div style="border-top:1px solid #000;padding-top:3px">Checked By</div></div><div style="text-align:center;width:110px"><div style="border-top:1px solid #000;padding-top:3px">Authorised By</div></div></div><div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center">'+(co.footer||'')+'</div></div></div>'
+  }
+  var html=vHtml('🏫 OFFICE COPY');
+  if(copies>=2)html+='<div class="vp-sep"></div>'+vHtml('👤 PARTY COPY');
+  if(copies>=3)html+='<div class="vp-sep"></div>'+vHtml('📁 FILE COPY');
+  document.getElementById('voucherContent').innerHTML=html;openModal('voucherModal');
+}
+function doPrint(){
+  S.printedCount++;localStorage.setItem('printedCount',S.printedCount);
+  var content=document.getElementById('voucherContent').innerHTML;
+  var w=window.open('','_blank','width=640,height=800');
+  w.document.write('<!DOCTYPE html><html><head><title>Voucher</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff;padding:16px;font-family:Arial,sans-serif}.voucher-wrap{max-width:500px;margin:0 auto;padding:16px}.vph{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px}.vph h2{font-size:17px;font-weight:800}.vph p{font-size:11px;color:#64748b;margin-top:2px}.vph h3{font-size:13px;font-weight:700;margin-top:5px;text-decoration:underline}.vpr{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px dotted #cbd5e1}.vpt{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;font-weight:800;border-top:2px solid #000;margin-top:8px}.vp-copy{text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;color:#64748b;margin-bottom:5px;text-transform:uppercase}.vp-sep{border:none;border-top:2px dashed #94a3b8;margin:16px 0}@page{margin:10mm}</style></head><body>'+content+'<script>window.onload=function(){window.print();setTimeout(function(){window.close()},800)}<\/script></body></html>');w.document.close();
+}
+function amtToWords(n){var a=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];var b=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];if(!n||n===0)return 'Zero';function tw(n){if(n<20)return a[n];return b[Math.floor(n/10)]+(n%10?' '+a[n%10]:'')}function hund(n){if(n>99)return a[Math.floor(n/100)]+' Hundred'+(n%100?' '+tw(n%100):'');return tw(n)}var w='';n=Math.floor(n);if(n>=10000000){w+=hund(Math.floor(n/10000000))+' Crore ';n%=10000000}if(n>=100000){w+=hund(Math.floor(n/100000))+' Lakh ';n%=100000}if(n>=1000){w+=hund(Math.floor(n/1000))+' Thousand ';n%=1000}w+=hund(n);return w.trim()+' Only'}
+
+// ═══════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════
+function initSettings(){buildCurrencyList();buildThemeColors();renderFeeCatList();var e=document.getElementById('s-gasUrl');if(e)e.value=GAS_URL;updateSheetInfo()}
+function switchSettingsTab(tab,el){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});el.classList.add('active');var tc=document.getElementById('stab-'+tab);if(tc)tc.classList.add('active')}
+function buildCurrencyList(){
+  var el=document.getElementById('currencyList');if(!el)return;
+  el.innerHTML=CURRENCIES.map(function(c){
+    return '<div class="currency-opt '+(c.code===S.settings.currency.code?'sel':'')+'" onclick="selectCurrency(\''+c.code+'\')">'
+      +'<span style="font-size:22px">'+c.flag+'</span><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:#fff">'+c.symbol+' — '+c.name+'</div><div style="font-size:10.5px;color:var(--text2)">'+c.code+'</div></div>'
+      +(c.code===S.settings.currency.code?'<span class="tag tg">✓ Active</span>':'')+'</div>'
+  }).join('');
+}
+function selectCurrency(code){
+  var c=CURRENCIES.find(function(x){return x.code===code});if(!c)return;
+  S.settings.currency=c;buildCurrencyList();updateCurrPreview();
+  document.getElementById('topCurrBadge').textContent=c.symbol+' '+c.code;
+  toast('Currency set to '+c.name,'success');
+}
+function updateCurrPreview(){var el=document.getElementById('currPreview');if(!el)return;var sym=S.settings.currency.symbol;var dec=(document.getElementById('s-decPlaces')&&document.getElementById('s-decPlaces').value)||'2';el.textContent=sym+' '+(dec==='0'?'4,82,500':'4,82,500.00')}
+function buildThemeColors(){
+  var el=document.getElementById('themeColors');if(!el)return;
+  var colors=[{n:'Blue',v:'#4f8ef7'},{n:'Purple',v:'#8b5cf6'},{n:'Green',v:'#10b981'},{n:'Orange',v:'#f59e0b'},{n:'Red',v:'#ef4444'},{n:'Teal',v:'#14b8a6'},{n:'Pink',v:'#ec4899'},{n:'Indigo',v:'#6366f1'}];
+  el.innerHTML=colors.map(function(c,i){return'<div onclick="applyTheme(\''+c.v+'\',this)" title="'+c.n+'" style="width:32px;height:32px;border-radius:8px;background:'+c.v+';cursor:pointer;border:2px solid '+(i===0?'#fff':'transparent')+';transition:.15s"></div>'}).join('');
+}
+function applyTheme(color,el){document.querySelectorAll('#themeColors div').forEach(function(d){d.style.borderColor='transparent'});el.style.borderColor='#fff';document.documentElement.style.setProperty('--primary',color);document.documentElement.style.setProperty('--primary3',color+'22');toast('Theme updated!','success')}
+function renderFeeCatList(){var el=document.getElementById('feeCatList');if(!el)return;el.innerHTML=S.settings.feeCats.map(function(cat,i){return'<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:12.5px;color:#fff;flex:1">'+cat+'</span><label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label><button class="btn btn-danger btn-xs" onclick="removeFeeCat('+i+')">✕</button></div>'}).join('')}
+function addFeeCat(){var v=document.getElementById('newFeeCat').value.trim();if(!v){toast('Enter category name','error');return}if(S.settings.feeCats.indexOf(v)>-1){toast('Already exists','warn');return}S.settings.feeCats.push(v);document.getElementById('newFeeCat').value='';renderFeeCatList();updateFeeCatDropdowns()}
+function removeFeeCat(i){S.settings.feeCats.splice(i,1);renderFeeCatList();updateFeeCatDropdowns()}
+function saveSettings(section){
+  var now=new Date().toISOString();var promises=[];
+  if(section==='company'){
+    var fields=['name','short','reg','gst','addr1','addr2','phone','mobile','email','web','header','footer'];
+    fields.forEach(function(f){var e=document.getElementById('s-'+f);if(e){S.settings.company[f]=e.value;promises.push(dbUpsert('settings',{key:'company.'+f,value:e.value,updated:now}))}});
+  }else if(section==='currency'){
+    promises.push(dbUpsert('settings',{key:'currency.code',value:S.settings.currency.code,updated:now}));
+    promises.push(dbUpsert('settings',{key:'currency.symbol',value:S.settings.currency.symbol,updated:now}));
+    promises.push(dbUpsert('settings',{key:'currency.name',value:S.settings.currency.name,updated:now}));
+  }else if(section==='academic'){
+    promises.push(dbUpsert('settings',{key:'feeCats',value:S.settings.feeCats.join(','),updated:now}));
+  }else if(section==='voucher'){
+    var pre=['crPre','ppPre','miPre'];pre.forEach(function(f){var e=document.getElementById('s-'+f);if(e){S.settings.voucher[f.replace('Pre','Pre')]=e.value;promises.push(dbUpsert('settings',{key:'voucher.'+f,value:e.value,updated:now}))}});
+    var pad=document.getElementById('s-numPad');if(pad){S.settings.voucher.pad=parseInt(pad.value);promises.push(dbUpsert('settings',{key:'voucher.pad',value:pad.value,updated:now}))}
+    var copies=document.getElementById('s-copies');if(copies){S.settings.voucher.copies=parseInt(copies.value);promises.push(dbUpsert('settings',{key:'voucher.copies',value:copies.value,updated:now}))}
+  }
+  Promise.all(promises).then(function(){toast({company:'Company info saved to Google Sheets!',currency:'Currency saved!',academic:'Academic settings saved!',voucher:'Voucher settings saved!',appearance:'Appearance saved!',security:'Security saved!'}[section]||'Saved!','success')}).catch(function(e){toast('Save failed: '+e.message,'error')});
+}
+function exportCSV(type){
+  var data=[];var headers=[];
+  if(type==='cashReceipts'){headers=['No','Party','Category','Amount','Date','Mode','Narration','Created By'];data=DB.cashReceipts.map(function(r){return[r.no,r.partyName,r.cat,r.amount,r.date,r.mode,r.narration,r.createdBy]})}
+  else if(type==='partyPayments'){headers=['No','Party','Category','Amount','Date','Mode','Status','Submitted By','Approved By'];data=DB.partyPayments.map(function(r){return[r.no,r.partyName,r.cat,r.amount,r.date,r.mode,r.status,r.submittedBy,r.approvedBy]})}
+  else if(type==='miscIncome'){headers=['No','Source','From','Amount','Date','Mode','Narration'];data=DB.miscIncome.map(function(r){return[r.no,r.source,r.from,r.amount,r.date,r.mode,r.narration]})}
+  else if(type==='ie'){headers=['Date','Voucher','Category','Party','Type','Income','Expense'];var rows=[];DB.cashReceipts.forEach(function(r){rows.push([r.date,r.no,r.cat,r.partyName,'Income',r.amount,0])});DB.partyPayments.filter(function(p){return p.status==='approved'}).forEach(function(r){rows.push([r.date,r.no,r.cat,r.partyName,'Expense',0,r.amount])});data=rows}
+  if(!data.length){toast('No data to export','warn');return}
+  var csv=[headers.join(',')].concat(data.map(function(r){return r.map(function(v){return'"'+(v||'').toString().replace(/"/g,'""')+'"'}).join(',')})).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=type+'_'+today()+'.csv';a.click();
+  toast('CSV exported!','success');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('.overlay').forEach(function(m){if(m.style.display!=='none')m.style.display='none'})});
+// START
+window.onload=bootApp;
+</script>
+</body>
+</html>
