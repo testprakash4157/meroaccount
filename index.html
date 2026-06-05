@@ -100,7 +100,7 @@ tr:hover td{background:var(--card2)}tr:last-child td{border-bottom:none}.tbl-act
 .load-overlay h2{font-size:18px;font-weight:700;color:#fff}.load-overlay p{font-size:13px;color:var(--text2)}
 .spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.login-wrap{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-wrap{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}.login-panel{display:flex;border-radius:22px;overflow:hidden;width:820px;max-width:98vw;box-shadow:0 24px 80px rgba(0,0,0,.5);border:1px solid var(--border2)}.login-left{flex:1;background:linear-gradient(160deg,#0d1f3c 0%,#0f2a4a 40%,#0b1a30 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;position:relative;overflow:hidden;min-width:320px}.login-left::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(79,142,247,.18) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(139,92,246,.14) 0%,transparent 55%)}.login-right{width:360px;background:var(--bg2);padding:36px 32px;display:flex;flex-direction:column;justify-content:center}
 .login-card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:32px;width:400px;max-width:100%}
 .chart-container{display:flex;align-items:flex-end;gap:5px;height:100px;padding-top:8px}
 .bar-grp{flex:1;display:flex;gap:2px;align-items:flex-end}.bar{border-radius:3px 3px 0 0;transition:.5s}
@@ -131,23 +131,115 @@ tr:hover td{background:var(--card2)}tr:last-child td{border-bottom:none}.tbl-act
 
 <!-- LOGIN -->
 <div id="loginScreen" class="login-wrap" style="display:none">
-  <div class="login-card">
-    <div style="text-align:center;margin-bottom:22px">
-      <div style="width:58px;height:58px;background:linear-gradient(135deg,var(--primary),var(--info));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px">🏫</div>
-      <h1 style="font-size:21px;font-weight:800;color:#fff">EduAccounts Pro</h1>
-      <p style="font-size:12px;color:var(--text2);margin-top:3px">School Accounting Management System</p>
-      <div style="margin-top:8px;font-size:11px;color:var(--text3)">
-        <span class="sync-dot" id="loginDot"></span><span id="loginStatus">Connecting...</span>
+  <div class="login-panel">
+    <!-- LEFT: Namaste Illustration Panel -->
+    <div class="login-left">
+      <div style="position:relative;z-index:1;text-align:center">
+        <!-- Namaste SVG Illustration -->
+        <svg viewBox="0 0 280 300" width="220" height="235" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 8px 32px rgba(79,142,247,.35))">
+          <!-- Background glow circle -->
+          <circle cx="140" cy="150" r="120" fill="rgba(79,142,247,0.08)" stroke="rgba(79,142,247,0.15)" stroke-width="1"/>
+          <circle cx="140" cy="150" r="90" fill="rgba(79,142,247,0.06)"/>
+          <!-- School building -->
+          <rect x="60" y="160" width="160" height="90" rx="4" fill="#1a3a6b" stroke="#2d5a9e" stroke-width="1.5"/>
+          <rect x="80" y="155" width="120" height="20" rx="3" fill="#1e4a8a" stroke="#3b6ec4" stroke-width="1"/>
+          <!-- Roof / Triangle -->
+          <polygon points="55,158 140,110 225,158" fill="#1e4a8a" stroke="#4f8ef7" stroke-width="1.5"/>
+          <!-- Flag on top -->
+          <line x1="140" y1="110" x2="140" y2="85" stroke="#4f8ef7" stroke-width="2"/>
+          <polygon points="140,85 162,93 140,101" fill="#f59e0b"/>
+          <!-- Windows -->
+          <rect x="88" y="170" width="22" height="18" rx="3" fill="#4f8ef7" opacity=".7"/>
+          <rect x="118" y="170" width="22" height="18" rx="3" fill="#4f8ef7" opacity=".7"/>
+          <rect x="148" y="170" width="22" height="18" rx="3" fill="#4f8ef7" opacity=".7"/>
+          <rect x="88" y="196" width="22" height="16" rx="3" fill="#4f8ef7" opacity=".5"/>
+          <rect x="148" y="196" width="22" height="16" rx="3" fill="#4f8ef7" opacity=".5"/>
+          <!-- Door -->
+          <rect x="119" y="210" width="22" height="40" rx="3" fill="#0d1f3c" stroke="#4f8ef7" stroke-width="1"/>
+          <circle cx="137" cy="231" r="2" fill="#f59e0b"/>
+          <!-- Steps -->
+          <rect x="112" y="248" width="36" height="5" rx="1" fill="#2d5a9e"/>
+          <!-- Namaste hands at center-top -->
+          <!-- Left hand/arm -->
+          <ellipse cx="108" cy="135" rx="10" ry="24" fill="#f4a460" transform="rotate(-20,108,135)"/>
+          <ellipse cx="96" cy="128" rx="7" ry="18" fill="#f4a460" transform="rotate(-35,96,128)"/>
+          <!-- Right hand/arm -->
+          <ellipse cx="172" cy="135" rx="10" ry="24" fill="#f4a460" transform="rotate(20,172,135)"/>
+          <ellipse cx="184" cy="128" rx="7" ry="18" fill="#f4a460" transform="rotate(35,184,128)"/>
+          <!-- Person body -->
+          <ellipse cx="140" cy="145" rx="22" ry="28" fill="#1e4a8a"/>
+          <!-- Head -->
+          <circle cx="140" cy="108" r="20" fill="#f4a460"/>
+          <!-- Hair -->
+          <ellipse cx="140" cy="93" rx="20" ry="9" fill="#2d1a00"/>
+          <!-- Face: eyes -->
+          <circle cx="133" cy="106" r="3" fill="#fff"/>
+          <circle cx="147" cy="106" r="3" fill="#fff"/>
+          <circle cx="134" cy="107" r="1.5" fill="#1a0a00"/>
+          <circle cx="148" cy="107" r="1.5" fill="#1a0a00"/>
+          <!-- Smile -->
+          <path d="M133,114 Q140,120 147,114" stroke="#c0622a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- Namaste joined palms below face -->
+          <ellipse cx="140" cy="142" rx="14" ry="9" fill="#f4a460"/>
+          <ellipse cx="134" cy="140" rx="6" ry="10" fill="#f4a460" transform="rotate(-10,134,140)"/>
+          <ellipse cx="146" cy="140" rx="6" ry="10" fill="#f4a460" transform="rotate(10,146,140)"/>
+          <!-- Fingers hint -->
+          <line x1="131" y1="132" x2="129" y2="126" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="134" y1="131" x2="133" y2="125" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="137" y1="131" x2="137" y2="124" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="149" y1="132" x2="151" y2="126" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="146" y1="131" x2="147" y2="125" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="143" y1="131" x2="143" y2="124" stroke="#e8956a" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Stars / sparkles -->
+          <text x="55" y="100" font-size="14" fill="#f59e0b" opacity=".8">✦</text>
+          <text x="210" y="95" font-size="10" fill="#4f8ef7" opacity=".9">✦</text>
+          <text x="195" y="160" font-size="8" fill="#8b5cf6" opacity=".7">✦</text>
+          <text x="72" y="170" font-size="7" fill="#f59e0b" opacity=".6">✦</text>
+          <!-- Namaste text arc -->
+          <text x="140" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#4f8ef7" letter-spacing="3" opacity=".9">🙏 NAMASTE</text>
+        </svg>
+        <div style="margin-top:18px">
+          <h2 style="font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px">EduAccounts Pro</h2>
+          <p style="font-size:12px;color:rgba(148,163,184,.8);margin-top:5px;line-height:1.6">School Accounting Management<br>Live Data · Google Sheets Powered</p>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+          <span style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);border-radius:20px;padding:3px 11px;font-size:10px;color:#93c5fd">🔐 Secure Login</span>
+          <span style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:20px;padding:3px 11px;font-size:10px;color:#6ee7b7">🟢 Live Data</span>
+          <span style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);border-radius:20px;padding:3px 11px;font-size:10px;color:#c4b5fd">📊 Google Sheets</span>
+        </div>
       </div>
     </div>
-    <div class="fg"><label>Username</label><input id="li-user" value="admin" placeholder="Username" autocomplete="username"></div>
-    <div class="fg" style="position:relative">
-      <label>Password</label>
-      <input id="li-pass" type="password" value="admin123" placeholder="Password" autocomplete="current-password">
-      <span onclick="togglePass('li-pass',this)" style="position:absolute;right:10px;top:28px;cursor:pointer;font-size:13px;color:var(--text3)">👁</span>
+    <!-- RIGHT: Login Form -->
+    <div class="login-right">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--info));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 10px">🏫</div>
+        <h1 style="font-size:19px;font-weight:800;color:#fff">Welcome Back</h1>
+        <p style="font-size:11px;color:var(--text2);margin-top:3px">Sign in to your account</p>
+        <div style="margin-top:7px;font-size:11px;color:var(--text3)">
+          <span class="sync-dot" id="loginDot"></span><span id="loginStatus">Connecting...</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Username</label>
+        <input id="li-user" placeholder="Username" autocomplete="username" style="font-size:13px">
+      </div>
+      <div class="fg" style="position:relative">
+        <label>Password</label>
+        <input id="li-pass" type="password" placeholder="Password" autocomplete="current-password" style="font-size:13px">
+        <span onclick="togglePass('li-pass',this)" style="position:absolute;right:10px;top:28px;cursor:pointer;font-size:14px;color:var(--text3)">👁</span>
+      </div>
+      <div style="background:var(--bg3);border:1px dashed var(--border2);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);display:flex;justify-content:space-between;align-items:center">
+        <span>Default Admin:</span>
+        <span style="display:flex;gap:8px">
+          <b style="color:var(--primary);cursor:pointer" onclick="document.getElementById('li-user').value='admin';document.getElementById('li-pass').value='admin123'">admin</b>
+          <span style="color:var(--text3)">/</span>
+          <b style="color:var(--primary);cursor:pointer" onclick="document.getElementById('li-user').value='admin';document.getElementById('li-pass').value='admin123'">admin123</b>
+          <span style="color:var(--success);cursor:pointer;font-size:12px" title="Click to auto-fill" onclick="document.getElementById('li-user').value='admin';document.getElementById('li-pass').value='admin123'">↖ fill</span>
+        </span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px" onclick="doLogin()" id="loginBtn">🔐 Login Securely</button>
+      <div id="loginError" style="display:none;margin-top:8px;text-align:center;font-size:12px;color:var(--danger)"></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px;margin-top:6px" onclick="doLogin()" id="loginBtn">🔐 Login Securely</button>
-    <div id="loginError" style="display:none;margin-top:8px;text-align:center;font-size:12px;color:var(--danger)"></div>
   </div>
 </div>
 
@@ -332,10 +424,10 @@ tr:hover td{background:var(--card2)}tr:last-child td{border-bottom:none}.tbl-act
         <div class="breadcrumb">Home › Accounting › <b>Party-wise Ledger</b></div>
         <div class="grid2" style="margin-bottom:14px">
           <div class="card"><div class="card-head"><h3>🔍 Select Party</h3></div><div class="fg"><label>Party / Vendor</label><select id="ledgerParty" onchange="loadLedger()"><option value="">-- Select Party --</option></select></div><div id="ledgerPartyCard" style="display:none"></div></div>
-          <div class="card"><div class="card-head"><h3>📅 Filter & Print</h3></div><div class="fg"><label>From Date</label><input id="ledgerFrom" type="date"></div><div class="fg"><label>To Date</label><input id="ledgerTo" type="date"></div><div style="display:flex;gap:7px"><button class="btn btn-primary" onclick="loadLedger()">🔄 Load</button><button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button></div></div>
+          <div class="card"><div class="card-head"><h3>📅 Filter & Print</h3></div><div class="fg"><label>From Date</label><input id="ledgerFrom" type="date"></div><div class="fg"><label>To Date</label><input id="ledgerTo" type="date"></div><div style="display:flex;gap:7px"><button class="btn btn-primary" onclick="loadLedger()">🔄 Load</button><button class="btn btn-ghost" onclick="printPartyLedger()">🖨️ Print</button></div></div>
         </div>
         <div class="card" id="ledgerTableCard" style="display:none">
-          <div class="card-head"><h3 id="ledgerTableTitle">📖 Party Statement</h3><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Print</button></div>
+          <div class="card-head"><h3 id="ledgerTableTitle">📖 Party Statement</h3><button class="btn btn-ghost btn-sm" onclick="printPartyLedger()">🖨️ Print</button></div>
           <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Voucher No.</th><th>Particular</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody id="ledgerTable"></tbody></table></div>
           <div style="display:flex;justify-content:flex-end;gap:20px;padding:10px 0;font-size:12px"><span>Dr: <b class="pos" id="ledgerDr">₹0</b></span><span>Cr: <b class="neg" id="ledgerCr">₹0</b></span><span>Balance: <b id="ledgerBal">₹0</b></span></div>
         </div>
@@ -688,6 +780,9 @@ function refreshCurrentPage(){var a=document.querySelector('.page.active');if(!a
 function bootApp(){
   document.getElementById('loadOverlay').style.display='flex';
   document.getElementById('loadMsg').textContent='Connecting to Google Sheets...';
+  // Auto-fill default credentials
+  var lu=document.getElementById('li-user');if(lu&&!lu.value)lu.value='admin';
+  var lp=document.getElementById('li-pass');if(lp&&!lp.value)lp.value='admin123';
   if(!GAS_URL||GAS_URL.length<10){
     document.getElementById('loadOverlay').style.display='none';
     document.getElementById('loginScreen').style.display='flex';
@@ -1105,6 +1200,68 @@ function exportCSV(type){
 }
 function setBtnLoading(id,text,disabled){var e=document.getElementById(id);if(e){e.textContent=text;e.disabled=disabled}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('.overlay').forEach(function(m){if(m.style.display!=='none')m.style.display='none'})});
+function printPartyLedger(){
+  var title=document.getElementById('ledgerTableTitle').textContent||'Party Statement';
+  var table=document.getElementById('ledgerTable');
+  if(!table||!table.innerHTML.trim()){toast('No ledger data to print','warn');return}
+  var co=S.settings.company;
+  var partyCard=document.getElementById('ledgerPartyCard').innerHTML||'';
+  var drEl=document.getElementById('ledgerDr').textContent||'';
+  var crEl=document.getElementById('ledgerCr').textContent||'';
+  var balEl=document.getElementById('ledgerBal').textContent||'';
+  var balCls=document.getElementById('ledgerBal').className||'';
+  var rows=table.innerHTML
+    .replace(/class="pos"/g,'style="color:#10b981;font-weight:600"')
+    .replace(/class="neg"/g,'style="color:#ef4444;font-weight:600"')
+    .replace(/style="font-weight:600"/g,'style="font-weight:700"')
+    .replace(/style="font-size:11px;color:var\(--primary\)"/g,'style="font-size:11px;color:#2563eb;font-weight:600"');
+  var w=window.open('','_blank','width=800,height:900');
+  w.document.write('<!DOCTYPE html><html><head><title>'+title+'</title><style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:Arial,sans-serif;background:#fff;color:#000;padding:20px}'
+    +'h1{font-size:18px;font-weight:800;text-align:center}'
+    +'h2{font-size:14px;text-align:center;margin-top:4px;font-weight:600}'
+    +'.sub{font-size:11px;color:#64748b;text-align:center;margin-top:2px}'
+    +'.meta{display:flex;justify-content:space-between;margin:14px 0 8px;font-size:12px;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;background:#f8fafc}'
+    +'table{width:100%;border-collapse:collapse;margin-top:10px}'
+    +'th{padding:8px 10px;background:#1e3a5f;color:#fff;font-size:11px;text-align:left;font-weight:700;letter-spacing:.3px}'
+    +'td{padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12px}'
+    +'tr:nth-child(even) td{background:#f8fafc}'
+    +'.totals{display:flex;justify-content:flex-end;gap:24px;margin-top:10px;padding:10px 12px;background:#f1f5f9;border-radius:6px;font-size:13px;font-weight:700}'
+    +'.sig{display:flex;justify-content:space-between;margin-top:40px}'
+    +'.sig-box{text-align:center;width:140px}'
+    +'.sig-line{border-top:1px solid #000;padding-top:4px;font-size:11px}'
+    +'@page{margin:12mm}'
+    +'@media print{.no-print{display:none}}'
+    +'</style></head><body>'
+    +'<h1>'+(co.name||'School Accounts')+'</h1>'
+    +(co.addr1?'<div class="sub">'+(co.addr1)+(co.addr2?', '+co.addr2:'')+'</div>':'')
+    +(co.phone||co.email?'<div class="sub">'+[co.phone?'Tel: '+co.phone:'',co.email?co.email:''].filter(Boolean).join(' | ')+'</div>':'')
+    +'<h2 style="margin-top:10px;text-decoration:underline">'+title+'</h2>'
+    +'<div class="meta">'
+    +'<span>Date: <b>'+new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})+'</b></span>'
+    +'<span>Printed By: <b>'+(S.user?S.user.name:'')+'</b></span>'
+    +'<span>Time: <b>'+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+'</b></span>'
+    +'</div>'
+    +'<table>'
+    +'<thead><tr><th>Date</th><th>Voucher No.</th><th>Particular</th><th>Debit (Dr)</th><th>Credit (Cr)</th><th>Balance</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table>'
+    +'<div class="totals">'
+    +'<span>Total Debit: <span style="color:#10b981">'+drEl+'</span></span>'
+    +'<span>Total Credit: <span style="color:#ef4444">'+crEl+'</span></span>'
+    +'<span>Closing Balance: <b style="color:'+(balCls.includes('pos')?'#10b981':'#ef4444')+'">'+balEl+'</b></span>'
+    +'</div>'
+    +'<div class="sig">'
+    +'<div class="sig-box"><div class="sig-line">Prepared By</div></div>'
+    +'<div class="sig-box"><div class="sig-line">Checked By</div></div>'
+    +'<div class="sig-box"><div class="sig-line">Authorised By</div></div>'
+    +'</div>'
+    +(co.footer?'<div style="text-align:center;margin-top:16px;font-size:10px;color:#94a3b8">'+co.footer+'</div>':'')
+    +'<script>window.onload=function(){window.print();setTimeout(function(){window.close()},1000)}<\/script>'
+    +'</body></html>');
+  w.document.close();
+}
 window.onload=bootApp;
 </script>
 </body>
