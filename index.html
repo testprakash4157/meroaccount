@@ -235,9 +235,9 @@ tr:hover td{background:var(--card2)}tr:last-child td{border-bottom:none}.tbl-act
         <div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Default Admin Credentials</div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="font-size:12px">
-            <span style="color:var(--text2)">Username: </span><span style="color:#fff;font-weight:700"></span>
+            <span style="color:var(--text2)">Username: </span><span style="color:#fff;font-weight:700">admin</span>
             <span style="color:var(--text3);margin:0 8px">&nbsp;|&nbsp;</span>
-            <span style="color:var(--text2)">Password: </span><span style="color:#fff;font-weight:700"></span>
+            <span style="color:var(--text2)">Password: </span><span style="color:#fff;font-weight:700">admin123</span>
           </div>
           <span style="font-size:10px;color:var(--primary);font-weight:600;white-space:nowrap">Click to fill ↗</span>
         </div>
@@ -1058,16 +1058,40 @@ function apiGet(p){var u=GAS_URL+'?'+Object.keys(p).map(function(k){return k+'='
 function apiPost(b){return fetch(GAS_URL,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json()})}
 function dbUpsert(sheet,data){if(!GAS_URL||GAS_URL.length<10)return Promise.resolve({ok:true,offline:true});return apiPost({action:'upsert',sheet:sheet,data:data}).then(function(r){if(r.error)throw new Error(r.error);return r})}
 function dbDelete(sheet,id){if(!GAS_URL||GAS_URL.length<10)return Promise.resolve({ok:true,offline:true});return apiPost({action:'delete',sheet:sheet,id:id}).then(function(r){if(r.error)throw new Error(r.error);return r})}
+function mergeArr(localArr, remoteArr){
+  // Keep any local record not yet reflected on the server (saved in the last 2 minutes)
+  // so a slow Google Sheets write never looks like lost data during auto-sync.
+  var remoteIds = {};
+  remoteArr.forEach(function(r){ if(r.id) remoteIds[r.id]=true; });
+  var pending = localArr.filter(function(r){
+    if(!r.id || remoteIds[r.id]) return false;
+    var ts = r.createdAt ? new Date(r.createdAt).getTime() : 0;
+    return (Date.now()-ts) < 120000;
+  });
+  return remoteArr.concat(pending);
+}
+var _syncInFlight = false;
 function syncAll(){
+  if(_syncInFlight) return Promise.resolve();
+  _syncInFlight = true;
   setSyncStatus('syncing');
   return apiGet({action:'getAll'}).then(function(data){
     if(data.error)throw new Error(data.error);
-    DB.parties=data.parties||[];DB.users=data.users||[];DB.cashReceipts=data.cashReceipts||[];
-    DB.partyPayments=data.partyPayments||[];DB.miscIncome=data.miscIncome||[];DB.blacklist=data.blacklist||[];
-    DB.notes=data.notes||[];DB.messages=data.messages||[];DB.settings=data.settings||[];DB.purchases=data.purchases||[];DB.invoices=data.invoices||[];
+    DB.parties=mergeArr(DB.parties,data.parties||[]);
+    DB.users=mergeArr(DB.users,data.users||[]);
+    DB.cashReceipts=mergeArr(DB.cashReceipts,data.cashReceipts||[]);
+    DB.partyPayments=mergeArr(DB.partyPayments,data.partyPayments||[]);
+    DB.miscIncome=mergeArr(DB.miscIncome,data.miscIncome||[]);
+    DB.blacklist=mergeArr(DB.blacklist,data.blacklist||[]);
+    DB.notes=mergeArr(DB.notes,data.notes||[]);
+    DB.messages=mergeArr(DB.messages,data.messages||[]);
+    DB.purchases=mergeArr(DB.purchases,data.purchases||[]);
+    DB.invoices=mergeArr(DB.invoices,data.invoices||[]);
+    DB.settings=data.settings||[];
     applySettingsFromDB();setSyncStatus('live');updateApprovalBadge();updateMsgBadge();populateDropdowns();refreshCurrentPage();
+    _syncInFlight = false;
     return data;
-  }).catch(function(e){setSyncStatus('offline');throw e});
+  }).catch(function(e){setSyncStatus('offline');_syncInFlight=false;throw e});
 }
 function setSyncStatus(st){
   var el=document.getElementById('syncStatus');var lb=document.getElementById('syncLabel');
@@ -1121,11 +1145,17 @@ function confirmDelete(label,cb){
 }
 function populateDropdowns(){
   function opts(arr,filter){return(filter?arr.filter(filter):arr).map(function(p){return'<option value="'+p.id+'">'+p.name+' ('+p.type+')</option>'}).join('')}
-  var crp=document.getElementById('cr-party');if(crp)crp.innerHTML='<option value="">-- Select Party --</option>'+opts(DB.parties);
-  var ppp=document.getElementById('pp-party');if(ppp)ppp.innerHTML='<option value="">-- Select --</option>'+opts(DB.parties,function(p){return p.type==='Vendor'||p.type==='Staff'||p.type==='Other'});
-  var lp=document.getElementById('ledgerParty');if(lp)lp.innerHTML='<option value="">-- Select Party --</option>'+opts(DB.parties);
-  var na=document.getElementById('note-assign');if(na)na.innerHTML='<option value="All">All Users</option>'+DB.users.map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join('');
-  var nm=document.getElementById('nm-to');if(nm&&S.user)nm.innerHTML=DB.users.filter(function(u){return u.username!==S.user.username}).map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join('');
+  function keepSel(el, html){
+    if(!el) return;
+    var prev = el.value;
+    el.innerHTML = html;
+    if(prev && el.querySelector('option[value="'+prev.replace(/"/g,'\\"')+'"]')) el.value = prev;
+  }
+  var crp=document.getElementById('cr-party');keepSel(crp,'<option value="">-- Select Party --</option>'+opts(DB.parties));
+  var ppp=document.getElementById('pp-party');keepSel(ppp,'<option value="">-- Select --</option>'+opts(DB.parties,function(p){return p.type==='Vendor'||p.type==='Staff'||p.type==='Other'}));
+  var lp=document.getElementById('ledgerParty');keepSel(lp,'<option value="">-- Select Party --</option>'+opts(DB.parties));
+  var na=document.getElementById('note-assign');keepSel(na,'<option value="All">All Users</option>'+DB.users.map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join(''));
+  var nm=document.getElementById('nm-to');if(nm&&S.user)keepSel(nm,DB.users.filter(function(u){return u.username!==S.user.username}).map(function(u){return'<option value="'+u.username+'">'+u.name+'</option>'}).join(''));
   updateFeeCatDropdowns();populatePurchaseVendors();
 }
 function updateFeeCatDropdowns(){var c=document.getElementById('cr-cat');if(c)c.innerHTML=S.settings.feeCats.map(function(x){return'<option>'+x+'</option>'}).join('')}
@@ -1642,7 +1672,7 @@ function printVoucher(type,id){
   else if(type==='misc'){var r=id?DB.miscIncome.find(function(x){return x.id===id}):DB.miscIncome[0];if(!r){toast('No record found','warn');return}data={no:r.no,date:r.date,title:'Misc Income Receipt',label:'Received From',party:r.from,cat:r.source,mode:r.mode,amount:parseFloat(r.amount||0),narration:r.narration||'—',by:r.createdBy,approved:''}}
   else if(type==='payment'){var r=id?DB.partyPayments.find(function(x){return x.id===id}):DB.partyPayments.find(function(p){return p.status==='approved'});if(!r){toast('No approved voucher found','error');return}data={no:r.no,date:r.date,title:'Party Payment Voucher',label:'Paid To',party:r.partyName,cat:r.cat,mode:r.mode,amount:parseFloat(r.amount||0),narration:r.narration||'—',by:r.submittedBy,approved:r.approvedBy}}
   var copies=S.settings.voucher.copies||2;
-  function vHtml(label){return'<div style="margin-bottom:8px"><div class="vp-copy">'+label+'</div><div class="voucher-wrap"><div class="vph">'+(co.logoUrl?'<img src="'+co.logoUrl+'" style="height:56px;max-width:120px;object-fit:contain;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">':'')+'<h2>'+(co.name||'School')+'</h2><p>'+(co.addr1||'')+(co.addr2?', '+co.addr2:'')+'</p>'+(co.phone||co.email?'<p>'+[co.phone?'Tel: '+co.phone:'',co.email||''].filter(Boolean).join(' | ')+'</p>':'')+'<h3>'+data.title+'</h3></div><div class="vpr"><span>Voucher No.:</span><b>'+data.no+'</b></div><div class="vpr"><span>Date:</span><span>'+fmtDate(data.date)+'</span></div><div class="vpr"><span>Date (BS):</span><span>\'+ fmtBs(data.date)+\'</span></div><div class="vpr"><span>'+data.label+':</span><b>'+data.party+'</b></div><div class="vpr"><span>Category:</span><span>'+data.cat+'</span></div><div class="vpr"><span>Mode:</span><span>'+data.mode+'</span></div><div class="vpr"><span>Narration:</span><span>'+data.narration+'</span></div><div class="vpr"><span>Prepared By:</span><span>'+data.by+'</span></div>'+(data.approved?'<div class="vpr"><span>Approved By:</span><span>'+data.approved+'</span></div>':'')+'<div class="vpt"><span>Amount:</span><span>'+fmt(data.amount)+'/-</span></div><div class="vpw">In Words: '+amtToWords(data.amount)+'</div><div class="vpsig"><div class="vpsig-box"><div class="vpsig-line">Prepared By</div></div><div class="vpsig-box"><div class="vpsig-line">Checked By</div></div><div class="vpsig-box"><div class="vpsig-line">Authorised By</div></div>'+(data.title==='Party Payment Voucher'?'<div class=\"vpsig-box\"><div class=\"vpsig-line\">Receiver&#39;s Signature</div></div>':'')+'</div>'+(co.footer?'<div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center">'+co.footer+'</div>':'')+'</div></div>'}
+  function vHtml(label){return'<div style="margin-bottom:8px"><div class="vp-copy">'+label+'</div><div class="voucher-wrap"><div class="vph">'+(co.logoUrl?'<img src="'+co.logoUrl+'" style="height:56px;max-width:120px;object-fit:contain;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">':'')+'<h2>'+(co.name||'School')+'</h2><p>'+(co.addr1||'')+(co.addr2?', '+co.addr2:'')+'</p>'+(co.phone||co.email?'<p>'+[co.phone?'Tel: '+co.phone:'',co.email||''].filter(Boolean).join(' | ')+'</p>':'')+'<h3>'+data.title+'</h3></div><div class="vpr"><span>Voucher No.:</span><b>'+data.no+'</b></div><div class="vpr"><span>Date:</span><span>'+fmtDate(data.date)+'</span></div><div class="vpr"><span>Date (BS):</span><span>'+fmtBs(data.date)+'</span></div><div class="vpr"><span>'+data.label+':</span><b>'+data.party+'</b></div><div class="vpr"><span>Category:</span><span>'+data.cat+'</span></div><div class="vpr"><span>Mode:</span><span>'+data.mode+'</span></div><div class="vpr"><span>Narration:</span><span>'+data.narration+'</span></div><div class="vpr"><span>Prepared By:</span><span>'+data.by+'</span></div>'+(data.approved?'<div class="vpr"><span>Approved By:</span><span>'+data.approved+'</span></div>':'')+'<div class="vpt"><span>Amount:</span><span>'+fmt(data.amount)+'/-</span></div><div class="vpw">In Words: '+amtToWords(data.amount)+'</div><div class="vpsig"><div class="vpsig-box"><div class="vpsig-line">Prepared By</div></div><div class="vpsig-box"><div class="vpsig-line">Checked By</div></div><div class="vpsig-box"><div class="vpsig-line">Authorised By</div></div>'+(data.title==='Party Payment Voucher'?'<div class=\"vpsig-box\"><div class=\"vpsig-line\">Receiver&#39;s Signature</div></div>':'')+'</div>'+(co.footer?'<div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center">'+co.footer+'</div>':'')+'</div></div>'}
   var html=vHtml('🏫 OFFICE COPY');if(copies>=2)html+='<div class="vp-sep"></div>'+vHtml('👤 PARTY COPY');if(copies>=3)html+='<div class="vp-sep"></div>'+vHtml('📁 FILE COPY');
   document.getElementById('voucherContent').innerHTML=html;openModal('voucherModal');
 }
@@ -2325,7 +2355,7 @@ var BS_MONTHS_DATA = [
   [2080,[31,31,31,32,31,30,30,30,29,30,29,31]],
   [2081,[31,31,32,31,31,31,30,29,30,29,30,30]],
   [2082,[31,31,32,32,31,30,30,29,30,29,30,30]],
-  [2083,[31,32,31,32,31,30,30,30,29,29,30,31]],
+  [2083,[31,32,32,32,31,30,30,30,29,29,30,31]],
   [2084,[31,31,31,32,31,30,30,30,29,30,29,31]],
   [2085,[31,31,32,31,31,31,30,29,30,29,30,30]],
   [2086,[31,31,32,32,31,30,30,29,30,29,30,30]],
@@ -2337,7 +2367,7 @@ var BS_MONTHS_DATA = [
 var BS_MONTH_NAMES = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
 var BS_MONTH_NAMES_NP = ['बैशाख','जेठ','असार','साउन','भाद्र','असोज','कार्तिक','मंसिर','पुष','माघ','फाल्गुन','चैत्र'];
 // Anchor: 2082-01-01 BS = April 14, 2025 AD = days since epoch
-var BS_ANCHOR_AD  = new Date(2025, 3, 14); // April 14 2025
+var BS_ANCHOR_AD  = new Date(2025, 3, 13); // April 13 2025 (Baisakh 1, 2082 BS)
 var BS_ANCHOR_BS  = {y:2082, m:1, d:1};
 
 function _bsDaysInMonth(y, m) {
